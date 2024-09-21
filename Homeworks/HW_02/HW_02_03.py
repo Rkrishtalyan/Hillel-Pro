@@ -12,6 +12,7 @@ def create_order(sell_price):
         # якщо каскадування знижок
         # net_price = net_price - (net_price * vip_discount)
         return net_price
+
     apply_additional_discount()
     print(f'Початкова ціна: {sell_price}, кінцева ціна з усіма знижками: {net_price}')
     return net_price
