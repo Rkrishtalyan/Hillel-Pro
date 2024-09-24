@@ -8,11 +8,11 @@
 3.	Викликати свою функцію my_sum, а потім ще раз спробувати скористатися вбудованою функцією sum.
 """
 
-import builtins  # для другого додаткового питання
+import builtins  # Для другого додаткового питання
 
 
-def my_sum(*args):  # без args у рядку 23 буде помилка "takes 0 positional arguments but 1 was given"
-    """Override built-in sum() function"""
+def my_sum(*args):  # Без args у рядку 23 буде помилка "takes 0 positional arguments but 1 was given"
+    """Override built-in sum() function."""
     global sum
     sum = my_sum
     print("This is my custom sum function!")
@@ -31,13 +31,13 @@ print(sum(the_list))
 # •	Що відбувається, коли локальна функція має те саме ім'я, що й вбудована?
 # •	Як можна отримати доступ до вбудованої функції, навіть якщо вона перекрита?
 
-# відповідь на перше питання
+# Відповідь на перше питання
 print("\nAnswer to question 1")
-print(sum)  # змінна sum перевизначається і вказує тепер на нову функцію
+print(sum)  # Змінна sum перевизначається і вказує тепер на нову функцію
 print(sum(1, 2))
 
-# відповідь на друге питання
+# Відповідь на друге питання
 print("\nAnswer to question 2")
 print(builtins.sum(the_list))
-# або створити ще одну змінну new_sum = sum ще на початку поряд з the_list
+# Або створити ще одну змінну new_sum = sum ще на початку, поряд з the_list
 # print(new_sum(the_list))
