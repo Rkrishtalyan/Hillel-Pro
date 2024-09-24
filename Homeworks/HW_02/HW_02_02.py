@@ -25,7 +25,7 @@ def subscribe(name: str):
 
 
 def unsubscribe(name: str):
-    """Remove name from subscribers list. Print corresponding message. Return None."""
+    """Attempt to remove name from subscribers list. Print corresponding message."""
     result = ''
     if subscribers.count(name):
         subscribers.remove(name)
