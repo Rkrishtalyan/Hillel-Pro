@@ -1,20 +1,36 @@
+"""Завдання 2: Менеджер підписки на розсилку
+
+Створити програму, яка імітує менеджер підписки на розсилку, демонструючи роботу з локальними, глобальними
+та вкладеними областями видимості.
+1.	На глобальному рівні створити змінну subscribers = [] — це список для збереження імен підписників.
+2.	Створити функцію subscribe, яка приймає ім'я підписника як аргумент і додає його до списку підписників.
+3.	В середині функції subscribe створити вкладену функцію confirm_subscription, яка повертає повідомлення:
+    "Підписка підтверджена для <ім'я>".
+4.	Створити функцію unsubscribe, яка приймає ім'я та видаляє його зі списку підписників.
+    Якщо таке ім'я не знайдено, повертає відповідне повідомлення.
+5.	Використати програму для додавання кількох підписників, підтвердження підписки та відписки.
+"""
+
+
 def subscribe(name: str):
+    """Add name to subscribers list. Return confirmation message."""
     subscribers.append(name)
 
     def confirm_subscription(subscriber_name):
+        """Print confirmation message."""
         print(f'Підписка підтверджена для {subscriber_name}')
 
     return confirm_subscription(name)
 
 
 def unsubscribe(name: str):
+    """Remove name from subscribers list. Print corresponding message. Return None."""
     result = ''
     if subscribers.count(name):
         subscribers.remove(name)
-        result = f'{name} успішно відписаний'
+        print(f'{name} успішно відписаний')
     else:
-        result = 'Таке імʼя не знайдено'
-    return result
+        print('Таке імʼя не знайдено')
 
 
 subscribers = []
@@ -22,5 +38,6 @@ subscribers = []
 subscribe("Олена")
 subscribe("Ігор")
 print(subscribers)  # ['Олена', 'Ігор']
-print(unsubscribe("Ігор"))  # 'Ігор успішно відписаний'
+
+unsubscribe("Ігор")  # 'Ігор успішно відписаний'
 print(subscribers)  # ['Олена']
