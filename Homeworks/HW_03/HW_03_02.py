@@ -9,76 +9,84 @@ from math import sqrt
 
 
 class Vector:
-    """Represent a 2D vector with basic arithmetic and comparison operations."""
+    """
+    Represent a 2D vector with basic arithmetic and comparison operations.
+
+    :attribute x: The x-coordinate of the vector.
+    :type x: float
+    :attribute y: The y-coordinate of the vector.
+    :type y: float
+    """
 
     def __init__(self, x, y):
-        """Initialize the Vector instance.
+        """
+        Initialize the Vector instance.
 
-        Args:
-            x (float): The x-coordinate of the vector.
-            y (float): The y-coordinate of the vector.
+        :param x: The x-coordinate of the vector.
+        :type x: float
+        :param y: The y-coordinate of the vector.
+        :type y: float
         """
         self.x = x
         self.y = y
 
     def __add__(self, other):
-        """Add two vectors.
+        """
+        Add two vectors.
 
-        Args:
-            other (Vector): The vector to add.
-
-        Returns:
-            Vector: A new vector that is the sum of this vector and the other.
+        :param other: The vector to add.
+        :type other: Vector
+        :return: A new vector that is the sum of this vector and the other.
+        :rtype: Vector
         """
         new_x = self.x + other.x
         new_y = self.y + other.y
         return Vector(new_x, new_y)
 
     def __sub__(self, other):
-        """Subtract one vector from another.
+        """
+        Subtract one vector from another.
 
-        Args:
-            other (Vector): The vector to subtract.
-
-        Returns:
-            Vector: A new vector that is the difference of this vector and the other.
+        :param other: The vector to subtract.
+        :type other: Vector
+        :return: A new vector that is the difference of this vector and the other.
+        :rtype: Vector
         """
         new_x = self.x - other.x
         new_y = self.y - other.y
         return Vector(new_x, new_y)
 
     def __mul__(self, scalar):
-        """Multiply the vector by a scalar.
+        """
+        Multiply the vector by a scalar.
 
-        Args:
-            scalar (float): The scalar value to multiply with.
-
-        Returns:
-            Vector: A new vector that is the result of scaling this vector by the scalar.
+        :param scalar: The scalar value to multiply with.
+        :type scalar: float
+        :return: A new vector that is the result of scaling this vector by the scalar.
+        :rtype: Vector
         """
         new_x = self.x * scalar
         new_y = self.y * scalar
         return Vector(new_x, new_y)
 
     def get_length(self):
-        """Calculate the length (magnitude) of the vector.
-
-        Returns:
-            float: The length of the vector.
         """
-        return sqrt(self.x**2 + self.y**2)
+        Calculate the length (magnitude) of the vector.
+
+        :return: The length of the vector.
+        :rtype: float
+        """
+        return sqrt(self.x ** 2 + self.y ** 2)
 
     def __eq__(self, other):
-        """Check if two vectors are equal based on their lengths or compare with an integer.
+        """
+        Check if two vectors are equal based on their lengths or compare with an integer.
 
-        Args:
-            other (Union[Vector, int]): The vector or integer to compare with.
-
-        Returns:
-            bool: True if the vectors have the same length, or the length of this vector equals the integer, False otherwise.
-
-        Raises:
-            TypeError: If the other object is neither a Vector nor an int.
+        :param other: The vector or integer to compare with.
+        :type other: Vector | int
+        :return: True if the vectors have the same length, or the length of this vector equals the integer, False otherwise.
+        :rtype: bool
+        :raises TypeError: If the other object is neither a Vector nor an int.
         """
         if isinstance(other, Vector):
             return self.get_length() == other.get_length()
@@ -87,16 +95,14 @@ class Vector:
         raise TypeError("Comparison is only supported with Vector instances or integers.")
 
     def __lt__(self, other):
-        """Check if this vector is shorter than another vector or an integer.
+        """
+        Check if this vector is shorter than another vector or an integer.
 
-        Args:
-            other (Union[Vector, int]): The vector or integer to compare with.
-
-        Returns:
-            bool: True if this vector is shorter than the other vector, or its length is less than the integer, False otherwise.
-
-        Raises:
-            TypeError: If the other object is neither a Vector nor an int.
+        :param other: The vector or integer to compare with.
+        :type other: Vector | int
+        :return: True if this vector is shorter than the other vector, or its length is less than the integer, False otherwise.
+        :rtype: bool
+        :raises TypeError: If the other object is neither a Vector nor an int.
         """
         if isinstance(other, Vector):
             return self.get_length() < other.get_length()
@@ -105,10 +111,11 @@ class Vector:
         raise TypeError("Comparison is only supported with Vector instances or integers.")
 
     def __repr__(self):
-        """Return a string representation of the vector.
+        """
+        Return a string representation of the vector.
 
-        Returns:
-            str: A string representing the vector in the form 'Vector(x, y)'.
+        :return: A string representing the vector in the form 'Vector(x, y)'.
+        :rtype: str
         """
         return f"Vector({self.x}, {self.y})"
 
