@@ -11,9 +11,9 @@ class Person:
 
     The Person class allows comparison between instances based on age.
 
-    :attribute name: The name of the person.
+    :var name: The name of the person.
     :type name: str
-    :attribute age: The age of the person.
+    :var age: The age of the person.
     :type age: int
     """
 
