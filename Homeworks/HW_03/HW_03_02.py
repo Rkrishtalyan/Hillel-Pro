@@ -12,9 +12,9 @@ class Vector:
     """
     Represent a 2D vector with basic arithmetic and comparison operations.
 
-    :attribute x: The x-coordinate of the vector.
+    :var x: The x-coordinate of the vector.
     :type x: float
-    :attribute y: The y-coordinate of the vector.
+    :var y: The y-coordinate of the vector.
     :type y: float
     """
 
