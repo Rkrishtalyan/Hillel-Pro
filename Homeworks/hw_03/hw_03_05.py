@@ -105,7 +105,6 @@ class MathCollection:
 
 mc_full = MathCollection([2, 3, 1, 4])
 mc_empty = MathCollection([])
-mc_type = MathCollection(2)
 
 # Test my_len method
 assert mc_full.my_len() > 1, "my_len method implementation issue for non-empty collections"
@@ -124,6 +123,13 @@ try:
 except ValueError:
     pass
 else:
-    assert False, "ValueError is not raised when expected"
+    assert False, "my_min method doesn't raise ValueError for empty sequence"
+
+try:
+    mc_type = MathCollection(2)
+except TypeError:
+    pass
+else:
+    assert False, "TypeError is not raised during object initialization"
 
 print("All tests passed!")
