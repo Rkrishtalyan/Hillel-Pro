@@ -59,6 +59,7 @@ class User:
         """
         self.__first_name = new_first_name
 
+    # альтернативний варыант використання
     last_name = property()
 
     @last_name.getter
@@ -81,6 +82,7 @@ class User:
         """
         self.__last_name = new_last_name
 
+    # ще один альтернативний варыант
     def get_email(self):
         """
         Get the email address of the user.
