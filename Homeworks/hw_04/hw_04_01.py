@@ -10,68 +10,87 @@
 
 class MyClass:
     """
+    Represent a class with a single value attribute.
+
+    :var value: The value to be used in the MyClass instance.
+    :type value: str
+    """
+
+    def __init__(self, value):
+        """
+        Initialize the MyClass instance with a value.
+
+        :param value: The value to be set for the instance.
+        :type value: str
+        """
+        self.value = value
+
+    def say_hello(self):
+        """
+        Return a greeting message using the value.
+
+        :return: A formatted string greeting.
+        :rtype: str
+        """
+        return f"Hello, {self.value}"
+
+
+class MyOwnClass:
+    """
     Represent a class with three attributes.
 
-    :var attr_1: First attribute of the class.
-    :type attr_1: any
-    :var attr_2: Second attribute of the class.
-    :type attr_2: any
-    :var attr_3: Third attribute of the class.
-    :type attr_3: any
+    :var attr_1: The first attribute of the object.
+    :type attr_1: Any
+    :var attr_2: The second attribute of the object.
+    :type attr_2: Any
+    :var attr_3: The third attribute of the object.
+    :type attr_3: Any
     """
 
     def __init__(self, attr_1, attr_2, attr_3):
         """
-        Initialize MyClass with three attributes.
+        Initialize MyOwnClass instance with three attributes.
 
-        :param attr_1: The first attribute.
-        :type attr_1: any
-        :param attr_2: The second attribute.
-        :type attr_2: any
-        :param attr_3: The third attribute.
-        :type attr_3: any
+        :param attr_1: The first attribute to be set.
+        :type attr_1: Any
+        :param attr_2: The second attribute to be set.
+        :type attr_2: Any
+        :param attr_3: The third attribute to be set.
+        :type attr_3: Any
         """
         self.attr_1 = attr_1
         self.attr_2 = attr_2
         self.attr_3 = attr_3
 
-    def test_method(self):
+    def sample_method(self):
         """
-        Print a test message indicating the object reference.
+        Print a sample message with object information.
+
+        :return: None
         """
-        print(f"This is a test method for object {self}")
+        print(f"This is a sample method for object {self}")
 
 
 def analyze_object(obj):
     """
-    Analyze an object's type, directory, and attributes.
-
-    If the object has a __dict__, display its attributes along with their
-    types and values. If not, indicate that the object has no attributes.
+    Analyze an object's type and attributes.
 
     :param obj: The object to be analyzed.
-    :type obj: any
-    :return: A formatted string describing the object's type, methods,
-             and attributes.
+    :type obj: Any
+    :return: A string summarizing the object's type and attributes.
     :rtype: str
     """
     obj_type = type(obj)
-    obj_dir = dir(obj)
-    obj_attrs = ""
-
-    if hasattr(obj, "__dict__"):
-        for key, value in obj.__dict__.items():
-            obj_attrs += f"Attribute '{key}': value - {value}, type - {type(value)}\n"
-    else:
-        obj_attrs = "This object has no attributes to display\n"
+    obj_details = "\n".join(f"- {el}, {type(getattr(obj, el))}" for el in dir(obj) if not el.startswith("__"))
 
     return (f"Object type:\n{obj_type}\n\n"
-            f"Methods and attributes:\n{obj_dir}\n\n"
-            f"Attribute types:\n{obj_attrs}\n")
+            f"Methods and attributes:\n{obj_details}\n")
 
 
 a = {"a": 1, "b": 2}
-b = MyClass(1, "two", [3])
+b = MyClass("World")
+c = MyOwnClass(1, "two", [3])
 
-print(analyze_object(a))
-print(analyze_object(b))
+print(f"Object: a\n\n{analyze_object(a)}")
+print(f"Object: b\n\n{analyze_object(b)}")
+print(f"Object: c\n\n{analyze_object(c)}")
