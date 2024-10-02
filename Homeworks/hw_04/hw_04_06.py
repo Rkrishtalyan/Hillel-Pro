@@ -41,19 +41,17 @@ class Proxy:
         orig_attr = getattr(self.instance, attr)
 
         if callable(orig_attr):  # от завдання вивести аргументи прям зламало голову...
-            def wrapper(*args, **kwargs):
+            def wrapper(*args):
                 """
                 Log method calls with their parameters and forward the call to the original method.
 
                 :param args: Positional arguments passed to the method.
                 :type args: tuple
-                :param kwargs: Keyword arguments passed to the method.
-                :type kwargs: dict
                 :return: The result of the original method call.
                 :rtype: object
                 """
-                print(f"Method '{attr}' called with parameters: args = {args}, kwargs = {kwargs}")
-                return orig_attr(*args, **kwargs)
+                print(f"Calling method:\n'{attr}' with args: {args}")
+                return orig_attr(*args)
             return wrapper
         return orig_attr
 
