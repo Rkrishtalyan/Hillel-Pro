@@ -1,0 +1,5 @@
+[4E 201] - The Dragonborn encounters a dragon named Mirmulnir for the first time.
+[4E 202] - The Dark Brotherhood sends the Dragonborn on a mission to assassinate Emperor Titus Mede II.
+[4E 203] - The Liberation of Windhelm. Ulfric Stormcloak defeats the Imperial Legion in the battle for East Skyrim.
+[4E 205] - The Elder Scroll event at Labyrinthian. The Dragonborn obtains the key to the Dark Gates.
+[4E 210] - The restoration of the Thieves Guild under the leadership of Karliah and Brynjolf.
