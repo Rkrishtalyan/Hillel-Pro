@@ -76,6 +76,6 @@ class LimitedGenerator:
 
 # Use LimitedGenerator to generate up to 100 even numbers and write them to a file
 with LimitedGenerator(even_numbers(), 100) as limited_gen:
-    with open('hw_05_05.txt', 'w') as file:
+    with open('hw_05_05_output.txt', 'w') as file:
         for number in limited_gen:
             file.write(f"{number}\n")

@@ -24,8 +24,8 @@ def log_tracer(file_name, keyword):
                 yield line
 
 
-chronicles = log_tracer("hw_05_04.txt", "Emperor")
-with open("hw_05_04_emperor.txt", 'w') as write_file:
+chronicles = log_tracer("hw_05_04_source.txt", "Emperor")
+with open("hw_05_04_output.txt", 'w') as write_file:
     while True:
         try:
             write_file.write(next(chronicles))

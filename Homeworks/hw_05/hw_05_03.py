@@ -85,7 +85,7 @@ class ImageAnalyzer:
 
 
 image_directory = '/Users/ruslank/PycharmProjects/Hillel_Pro/Tima'
-csv_file = 'hw_05_03.csv'
+csv_file = 'hw_05_03_output.csv'
 
 for metadata in ImageAnalyzer(image_directory, csv_file):
     print(metadata)  # згенерований csv лежить у Гіті
