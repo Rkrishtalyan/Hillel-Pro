@@ -47,8 +47,14 @@ class ArchiveManager:
         :rtype: zipfile.ZipFile
         """
         self.archive = zipfile.ZipFile(self.archive_name, 'a')
+        existing_files = self.archive.namelist()
         for file in self.files:
-            self.archive.write(file, arcname=os.path.basename(file))  # Adding only files without full catalog tree
+            file_name_in_archive = os.path.basename(file)  # To add only files without full catalog tree
+            if file_name_in_archive in existing_files:
+                print(f"Skipping {file_name_in_archive}: already exists in the archive.")
+            else:
+                self.archive.write(file, arcname=file_name_in_archive)
+                print(f"File {file_name_in_archive} was added to the archive")
         return self.archive
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -66,4 +72,4 @@ files = [os.path.join(directory, file) for file in os.listdir(directory)]
 
 # Testing the auto-archive context
 with ArchiveManager("hw_05_10_archive.zip", *files) as archive:
-    print("Files were added to the zip file")
+    pass
