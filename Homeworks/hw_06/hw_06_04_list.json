@@ -1,0 +1,44 @@
+[
+    {
+        "назва": "To Kill a Mockingbird",
+        "автор": "Harper Lee",
+        "рік": 1960,
+        "наявність": true
+    },
+    {
+        "назва": "1984",
+        "автор": "George Orwell",
+        "рік": 1949,
+        "наявність": false
+    },
+    {
+        "назва": "The Great Gatsby",
+        "автор": "F. Scott Fitzgerald",
+        "рік": 1925,
+        "наявність": true
+    },
+    {
+        "назва": "Pride and Prejudice",
+        "автор": "Jane Austen",
+        "рік": 1813,
+        "наявність": true
+    },
+    {
+        "назва": "The Catcher in the Rye",
+        "автор": "J.D. Salinger",
+        "рік": 1951,
+        "наявність": false
+    },
+    {
+        "назва": "The Hobbit",
+        "автор": "J.R.R. Tolkien",
+        "рік": 1937,
+        "наявність": true
+    },
+    {
+        "назва": "Brave New World",
+        "автор": "Aldous Huxley",
+        "рік": 1932,
+        "наявність": true
+    }
+]
