@@ -20,7 +20,7 @@ Modules imported:
 """
 
 
-from .database_init import initialize_database
+from .init_database import initialize_database
 from .crud_funcs import (
     create_product,
     create_order,
