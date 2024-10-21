@@ -9,8 +9,8 @@
 """
 
 from concurrent.futures.thread import ThreadPoolExecutor
-from PIL import Image
 import time
+from PIL import Image
 
 
 # ---- Function to resize an image ----
