@@ -1,27 +1,25 @@
-"""
-Завдання 2: Робота з асинхронними HTTP-запитами.
-
-Використовуючи бібліотеку aiohttp, створіть асинхронну функцію fetch_content(url: str),
-яка виконує HTTP-запит до вказаного URL і повертає вміст сторінки.
-Створіть асинхронну функцію fetch_all(urls: list), яка приймає список URL
-і завантажує вміст усіх сторінок паралельно.
-Використайте await та об'єднання кількох завдань (asyncio.gather()),
-щоб завантаження всіх сторінок виконувалося одночасно.
-Обробіть можливі помилки запитів, щоб у разі проблеми з підключенням
-функція повертала відповідне повідомлення про помилку.
-"""
-
 import asyncio
 import aiohttp
 
 
+# ---- Fetch Content Function ----
 async def fetch_content(url):
+    """
+    Fetch content from a single URL asynchronously.
+
+    :param url: The URL to fetch content from.
+    :type url: str
+    :return: The text content of the response.
+    :rtype: str
+    :raises aiohttp.ClientError: If there is an error with the HTTP request.
+    """
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             response.raise_for_status()  # raises exception for 4xx and 5xx errors
             return await response.text()
 
 
+# ---- Fetch All URLs Function ----
 async def fetch_all(urls):
     """
     Fetch content from a list of URLs asynchronously.
