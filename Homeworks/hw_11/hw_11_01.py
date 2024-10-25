@@ -51,6 +51,7 @@ async def main(urls):
     # for result in results:
     #     print(result)
 
+
 # ---- URL List and Event Loop Execution ----
 
 urls = [
