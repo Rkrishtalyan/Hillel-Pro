@@ -1,2 +1,3 @@
-# Git sync test
+"""Git sync test"""
+
 print("- Hello there!\n- General Kenobi...")
