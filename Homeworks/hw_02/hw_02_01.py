@@ -3,17 +3,24 @@
 
 Демонстрація використання вбудованих функцій та їх перекриття локальними функціями.
 
-1.	Написати функцію my_sum, яка перекриває вбудовану функцію sum. Функція поинна просто виводити повідомлення:
-    "This is my custom sum function!".
-2.	Створити список чисел і викликати вбудовану функцію sum, щоб підсумувати значення списку.
-3.	Викликати свою функцію my_sum, а потім ще раз спробувати скористатися вбудованою функцією sum.
+1.  Написати функцію my_sum, яка перекриває вбудовану функцію sum.
+    Функція поинна просто виводити повідомлення: "This is my custom sum function!".
+2.  Створити список чисел і викликати вбудовану функцію sum, щоб підсумувати значення списку.
+3.  Викликати свою функцію my_sum, а потім ще раз спробувати скористатися вбудованою функцією sum.
 """
 
 import builtins  # Для другого додаткового питання
 
 
 def my_sum(*args):  # Без args у рядку 23 буде помилка "takes 0 positional arguments but 1 was given"
-    """Override built-in sum() function."""
+    """
+    Override the built-in sum function with a custom function that prints a message.
+
+    This function reassigns the global name 'sum' to reference itself,
+    which overrides Python's built-in sum function in this scope.
+
+    :param args: Accepts arbitrary arguments, but they are unused.
+    """
     global sum
     sum = my_sum
     print("This is my custom sum function!")

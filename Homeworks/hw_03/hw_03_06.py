@@ -1,5 +1,5 @@
 """
-6. Access-like
+6.  Access-like
 
 1.  Реалізуйте клас User з атрибутами first_name, last_name, email.
     Додайте методи для отримання та встановлення цих атрибутів через декоратор @property.

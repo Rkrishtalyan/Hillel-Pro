@@ -1,5 +1,5 @@
 """
-5. For built-in functions implementation
+5.  For built-in functions implementation
 
 1.  Реалізуйте власну версію функцій len(), sum(), та min().
     Використовуйте спеціальні методи __len__, __iter__, __getitem__, якщо необхідно.
