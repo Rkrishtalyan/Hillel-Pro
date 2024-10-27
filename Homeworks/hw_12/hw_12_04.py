@@ -9,7 +9,7 @@ import re
 
 def convert_date(date):
     """
-    Convert a date from MM/DD/YYYY format to YYYY-MM-DD format.
+    Convert a date from DD/MM/YYYY format to YYYY-MM-DD format.
 
     This function extracts the year, month, and day components from a date string
     and formats them as 'YYYY-MM-DD'.
