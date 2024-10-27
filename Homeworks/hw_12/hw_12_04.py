@@ -14,7 +14,7 @@ def convert_date(date):
     This function extracts the year, month, and day components from a date string
     and formats them as 'YYYY-MM-DD'.
 
-    :param date: The date string in MM/DD/YYYY format.
+    :param date: The date string in DD/MM/YYYY format.
     :type date: str
     :return: The reformatted date string in YYYY-MM-DD format.
     :rtype: str
