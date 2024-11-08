@@ -1,0 +1,91 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Our Services
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Our Services ({{ services|length }} service{{ services|length|pluralize }})</h2>
+
+<!-- Search and Category Filter Form -->
+<form method="get" class="form-inline mb-4">
+    <input type="text" name="q" value="{{ query }}" class="form-control mr-sm-2 mb-2" placeholder="Search services">
+
+    <select name="category" class="form-control mr-sm-2 mb-2">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-outline-success mb-2">Filter</button>
+
+    {% if query or selected_category %}
+        <a href="{% url 'service' %}" class="btn btn-link mb-2">Reset</a>
+    {% endif %}
+</form>
+
+{% if not query and not selected_category %}
+    <!-- Featured Services using 'slice' filter -->
+    <h3>Featured Services</h3>
+    <div class="row">
+        {% for service in services|slice:":3" %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>{{ service.name|upper }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ service.description|truncatechars:150 }}</p>
+                </div>
+                <div class="card-footer">
+                    {% if service.available %}
+                        <span class="badge badge-success">Available</span>
+                    {% else %}
+                        <span class="badge badge-warning">Coming Soon</span>
+                    {% endif %}
+                    <span class="float-right">{{ service.category }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- All Services -->
+{% if services %}
+    <h3>
+        {% if query or selected_category %}
+            Search Results
+        {% else %}
+            All Services
+        {% endif %}
+    </h3>
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>{{ service.name|upper }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ service.description|truncatechars:150 }}</p>
+                </div>
+                <div class="card-footer">
+                    {% if service.available %}
+                        <span class="badge badge-success">Available</span>
+                    {% else %}
+                        <span class="badge badge-warning">Coming Soon</span>
+                    {% endif %}
+                    <span class="float-right">{{ service.category }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No services found matching your search.</p>
+{% endif %}
+
+<p><small>Last updated on {{ last_updated|date:"F j, Y" }}</small></p>
+{% endblock %}

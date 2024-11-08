@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    About the Dark Brotherhood of Skyrim
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column" style="min-height: inherit;">
+    <div>
+        <h2 class="mt-4">{{ "About the Dark Brotherhood of Skyrim"|upper }}</h2>
+        <p>{{ company_description|truncatechars:500|safe }}</p>
+    </div>
+    <div class="mt-auto">
+        <p><small>Last updated on {{ last_updated|date:"F j, Y" }}</small></p>
+        <a class="btn btn-primary btn-lg" href="{% url 'service' %}" role="button">Our Services</a>
+    </div>
+</div>
+{% endblock %}

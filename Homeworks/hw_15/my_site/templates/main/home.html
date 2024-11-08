@@ -1,0 +1,17 @@
+<!-- home.html -->
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+    Welcome to the Dark Brotherhood of Skyrim
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <h1 class="display-4">{{ "Embrace the shadows"|upper }}</h1>
+    <img src="{% static 'images/logo.webp' %}" alt="Dark Brotherhood Logo" class="img-fluid my-4">
+
+    <p class="lead">Master the art of scholarly pursuits with the Dark Brotherhood of Skyrim.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn More</a>
+</div>
+{% endblock %}
