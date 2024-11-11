@@ -1,8 +1,25 @@
+"""
+Module for testing and demonstrating ORM queries in the board app.
+
+This module contains functions to retrieve and manipulate data related to ads,
+categories, comments, and users using Django's ORM. Each function serves as a
+demonstration of ORM capabilities, with a focus on filtering, aggregating, and
+retrieving related objects.
+
+Functions:
+    - get_last_month_ads: Retrieve ads created within the last 30 days.
+    - get_active_ads_in_category: Retrieve active ads in a specified category.
+    - count_comments_for_ad: Count comments for each ad and display the results.
+    - get_user_comments: Retrieve ads posted by a specific user.
+"""
+
+# ---- Imports ----
+from datetime import timedelta
 from django.db.models import Count
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import timedelta
-from board.models import Ad, Category, UserProfile
+
+from .models import Ad, Category, UserProfile
 
 
 # ---- Retrieve Ads from the Last Month ----

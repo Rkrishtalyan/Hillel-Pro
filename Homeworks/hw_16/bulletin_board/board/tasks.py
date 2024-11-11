@@ -1,7 +1,19 @@
+"""
+Module for background tasks in the board app.
+
+This module defines background tasks that are scheduled to run asynchronously
+to handle specific actions related to the `Ad` model. The tasks are implemented
+using the `background_task` library, enabling deferred execution of operations.
+
+Functions:
+    - deactivate_ad_task: Deactivates an `Ad` instance after a set period.
+"""
+
 # ---- Imports ----
 from background_task import background
 
 from .models import Ad
+
 
 # ---- Background Tasks ----
 

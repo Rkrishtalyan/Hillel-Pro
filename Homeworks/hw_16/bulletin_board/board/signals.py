@@ -1,9 +1,22 @@
+"""
+Module for signal handling in the board app.
+
+This module defines signal handlers that automatically trigger specific actions
+after certain events in the `Ad` model. The signal handlers utilize Django’s
+`post_save` signal to perform tasks immediately after an `Ad` instance is created.
+
+Functions:
+    - schedule_ad_deactivation: Schedules a background task to deactivate an ad after a set period.
+    - send_notification: Sends a notification email to the user when an ad is created.
+"""
+
 # ---- Imports ----
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from .models import Ad
 from .tasks import deactivate_ad_task
+
 
 # ---- Signal Handlers ----
 
