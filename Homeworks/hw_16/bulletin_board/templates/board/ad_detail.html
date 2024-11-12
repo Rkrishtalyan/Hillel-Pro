@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ ad.title }}</title>
+</head>
+<body>
+    <h1>{{ ad.title }}</h1>
+    <p>{{ ad.description }}</p>
+    <p>Price: {{ ad.price }}</p>
+    <p>Posted by: {{ ad.user }}</p>
+
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li>
+                {{ comment.user }}: {{ comment.content }}
+            </li>
+        {% empty %}
+            <li>No comments yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
