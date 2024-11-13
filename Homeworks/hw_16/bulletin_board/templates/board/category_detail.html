@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Ads in {{ category.name }}</title>
+</head>
+<body>
+    <h1>Ads in {{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+    <ul>
+        {% for ad in ads %}
+            <li>
+                <a href="{% url 'board:ad_detail' ad.id %}">{{ ad.title }}</a> - {{ ad.price }}<br>
+                {{ ad.short_description }}
+            </li>
+        {% empty %}
+            <li>No ads available in this category.</li>
+        {% endfor %}
+    </ul>
+    <p><a href="{% url 'board:category_list' %}">Back to Categories</a></p>
+</body>
+</html>

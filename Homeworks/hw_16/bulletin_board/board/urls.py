@@ -21,6 +21,10 @@ app_name = 'board'
 
 # ---- URL Patterns ----
 urlpatterns = [
+    path('', views.ad_list, name='ad_list'),
     path('ads/', views.ad_list, name='ad_list'),
     path('ads/<int:ad_id>/', views.ad_detail, name='ad_detail'),
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/<int:category_id>/', views.category_detail, name='category_detail'),
+    path('users/<int:user_id>/', views.user_profile, name='user_profile'),
 ]

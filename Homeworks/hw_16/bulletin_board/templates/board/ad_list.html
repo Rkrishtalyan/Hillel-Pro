@@ -5,11 +5,21 @@
 </head>
 <body>
     <h1>Ads List</h1>
+    <nav>
+        <a href="{% url 'board:ad_list' %}">Home</a> |
+        <a href="{% url 'board:category_list' %}">Categories</a>
+    </nav>
     <ul>
         {% for ad in ads %}
             <li>
                 <a href="{% url 'board:ad_detail' ad.id %}">{{ ad.title }}</a> - {{ ad.price }}<br>
-                {{ ad.short_description }}
+                {{ ad.short_description }}<br>
+                <strong>Categories:</strong>
+                {% for category in ad.category.all %}
+                    <a href="{% url 'board:category_detail' category_id=category.id %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    None
+                {% endfor %}
             </li>
         {% empty %}
             <li>No ads available.</li>

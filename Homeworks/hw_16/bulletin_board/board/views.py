@@ -10,9 +10,8 @@ Functions:
 """
 
 # ---- Imports ----
-from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
-from .models import Ad, Category, Comment
+from .models import Ad, Category, Comment, UserProfile
 
 # ---- View Functions ----
 
@@ -43,3 +42,20 @@ def ad_detail(request, ad_id):
     ad = get_object_or_404(Ad, pk=ad_id)
     comments = ad.comments.all()
     return render(request, 'board/ad_detail.html', {'ad': ad, 'comments': comments})
+
+
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'board/category_list.html', {'categories': categories})
+
+
+def category_detail(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    ads = category.ad_set.filter(is_active=True)
+    return render(request, 'board/category_detail.html', {'category': category, 'ads': ads})
+
+
+def user_profile(request, user_id):
+    user_profile = get_object_or_404(UserProfile, pk=user_id)
+    ads = Ad.objects.filter(user=user_profile, is_active=True)
+    return render(request, 'board/user_profile.html', {'user_profile': user_profile, 'ads': ads})

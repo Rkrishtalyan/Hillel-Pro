@@ -6,18 +6,35 @@
 <body>
     <h1>{{ ad.title }}</h1>
     <p>{{ ad.description }}</p>
-    <p>Price: {{ ad.price }}</p>
-    <p>Posted by: {{ ad.user }}</p>
+    <p><strong>Price:</strong> {{ ad.price }}</p>
+    <p><strong>Posted by:</strong> 
+        <a href="{% url 'board:user_profile' user_id=ad.user.id %}">
+            {{ ad.user.first_name }} {{ ad.user.last_name }}
+        </a>
+    </p>
+    <p><strong>Categories:</strong>
+        {% for category in ad.category.all %}
+            <a href="{% url 'board:category_detail' category_id=category.id %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            None
+        {% endfor %}
+    </p>
 
     <h2>Comments</h2>
     <ul>
         {% for comment in comments %}
             <li>
-                {{ comment.user }}: {{ comment.content }}
+                <strong>{{ comment.user.first_name }} {{ comment.user.last_name }}:</strong> {{ comment.content }}<br>
+                <em>Posted on {{ comment.created_at|date:"F j, Y, g:i a" }}</em>
             </li>
         {% empty %}
             <li>No comments yet.</li>
         {% endfor %}
     </ul>
+
+    <nav>
+        <a href="{% url 'board:ad_list' %}">Back to Ads List</a> |
+        <a href="{% url 'board:category_list' %}">Categories</a>
+    </nav>
 </body>
 </html>

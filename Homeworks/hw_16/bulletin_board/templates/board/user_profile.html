@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Profile: {{ user_profile.first_name }} {{ user_profile.last_name }}</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <p><strong>Name:</strong> {{ user_profile.first_name }} {{ user_profile.last_name }}</p>
+    <p><strong>Username:</strong> {{ user_profile.username }}</p>
+    <p><strong>Phone Number:</strong> {{ user_profile.phone_number }}</p>
+    <p><strong>Address:</strong> {{ user_profile.address }}</p>
+
+    <h2>Ads Posted by {{ user_profile.first_name }}</h2>
+    <ul>
+        {% for ad in ads %}
+            <li>
+                <a href="{% url 'board:ad_detail' ad.id %}">{{ ad.title }}</a> - {{ ad.price }}<br>
+                {{ ad.short_description }}
+            </li>
+        {% empty %}
+            <li>This user has not posted any ads yet.</li>
+        {% endfor %}
+    </ul>
+    <p><a href="{% url 'board:ad_list' %}">Back to Ads List</a></p>
+</body>
+</html>
