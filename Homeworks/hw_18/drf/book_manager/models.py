@@ -10,6 +10,7 @@ Classes:
 Dependencies:
     - Django's ORM and `User` model for user associations.
 """
+
 from django.db import models
 from django.contrib.auth.models import User
 

@@ -16,6 +16,7 @@ Dependencies:
     - Django's `User` model for managing user accounts.
     - Application-specific models, serializers, filters, and pagination classes.
 """
+
 from rest_framework import generics, permissions, viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend

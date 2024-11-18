@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_api',
+    'book_manager',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'drf_yasg',
     'corsheaders',
@@ -154,6 +155,7 @@ SIMPLE_JWT = {
 }
 
 LOGIN_REDIRECT_URL = '/swagger/'
+# LOGOUT_REDIRECT_URL = '/swagger/'  # for logout feature, not implemented
 
 # CORS_ALLOW_ALL_ORIGINS = True
 

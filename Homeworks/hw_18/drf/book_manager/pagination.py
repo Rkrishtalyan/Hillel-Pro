@@ -10,6 +10,7 @@ Classes:
 Dependencies:
     - Django REST framework's `PageNumberPagination`.
 """
+
 from rest_framework.pagination import PageNumberPagination
 
 
