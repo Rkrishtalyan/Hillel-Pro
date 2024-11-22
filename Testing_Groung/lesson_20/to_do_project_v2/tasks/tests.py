@@ -8,6 +8,8 @@ from selenium import webdriver
 from .models import Task
 from .signals import task_create_signal
 from .views import send_task_notification
+from .forms import TaskForm
+from .serializers import TaskSerializer
 
 
 class TaskModelTest(TestCase):
@@ -62,16 +64,16 @@ def test_create_task(client):
     assert response.json()['title'] == 'Test Task'
 
 
-# @pytest.mark.parametrize('title', 'completed', [
-#     ('Task 1', False),
-#     ('Task 2', True),
-#     ('Task 3', False),
-# ])
-# @pytest.mark.django_db
-# def test_task_creation_parametrized(title, completed):
-#     task = Task.objects.create(title=title, completed=completed)
-#     assert task.title == title
-#     assert task.completed == completed
+@pytest.mark.parametrize('title, completed', [
+    ('Task 1', False),
+    ('Task 2', True),
+    ('Task 3', False),
+])
+@pytest.mark.django_db
+def test_task_creation_parametrized(title, completed):
+    task = Task.objects.create(title=title, completed=completed)
+    assert task.title == title
+    assert task.completed == completed
 
 
 # ---- Fixture ----
@@ -135,3 +137,43 @@ def test_task_creation_with_selenium():
     driver.get('http://localhost:8000/tasks')
     assert 'Tasks' in driver.title
     driver.quit()
+
+
+class TaskFormTestCase(TestCase):
+    def test_form_valid_data(self):
+        form = TaskForm(data={'title': 'Complete Homework', 'description': 'Math Exercises', 'due_date': '2024-11-25'})
+        self.assertTrue(form.is_valid())
+
+    def test_form_missing_required_field(self):
+        form = TaskForm(data={'description': 'Math Exercises', 'due_date': '2024-11-25'})
+        self.assertFalse(form.is_valid())
+        self.assertIn('title', form.errors)
+
+
+@pytest.mark.parametrize(
+    'data, is_valid', [
+        ({'title': 'Buy groceries', 'description': 'Milk and bread', 'due_date': '2024-11-30'}, True),
+        ({'description': 'No title provided', 'due_date': '2024-11-30'}, False),
+    ]
+)
+def test_task_form(data, is_valid):
+    form = TaskForm(data=data)
+    assert form.is_valid() == is_valid
+
+
+class TaskSerializerTestCase(TestCase):
+    def test_serializer_valid_data(self):
+        data = {
+            'title': 'Write tests', 'description': 'For forms and serializers', 'due_date': '2024-12-01'
+        }
+        serializer = TaskSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.validated_data['title'], 'Write tests')
+
+    def test_serializer_invalid_data(self):
+        data = {
+            'description': 'Missing Title'
+        }
+        serializer = TaskSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('title', serializer.errors)
