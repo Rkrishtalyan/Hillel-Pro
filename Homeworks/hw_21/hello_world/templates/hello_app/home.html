@@ -19,9 +19,9 @@
                 url: 'get_user_profiles',
                 method: 'GET',
                 success: function(data) {
-                    $('#users-list').empty();
+                    $('#user-list').empty();
                     data.user_profiles.forEach(function(user) {
-                        $('#users-list').append(`<li>${user.first_name} - ${user.last_name}</li>`);
+                        $('#user-list').append(`<li>${user.first_name} - ${user.last_name}</li>`);
                     });
                 },
                 error: function(error) {
