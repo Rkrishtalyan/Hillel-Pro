@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #5a67d8;
+}
+
+button {
+    background-color: #5a67d8;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #4c51bf;
+}
+
+#user-list {
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+#user-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}

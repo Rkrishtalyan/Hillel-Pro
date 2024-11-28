@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <title>Hello, World!</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Welcome to Hello World App!</h1>
+    <button id="fetch-users">Get User Profiles</button>
+    <ul id="users-list"></ul>
+
+    <script>
+        $('#fetch-users').on('click', function() {
+            $.ajax({
+                url: 'get_user_profiles',
+                method: 'GET',
+                success: function(data) {
+                    $('#users-list').empty();
+                    data.user_profiles.forEach(function(user) {
+                        $('#users-list').append(`<li>${user.first_name} - ${user.last_name}</li>`);
+                    });
+                },
+                error: function(error) {
+                    alert('Error retrieving user profiles');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
