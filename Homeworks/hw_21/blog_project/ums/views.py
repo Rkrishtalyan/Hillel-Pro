@@ -49,7 +49,7 @@ def register_view(request):
             return redirect('')
     else:
         form = RegistrationForm()
-    return render('ums/register.html', {'form': form})
+    return render(request,'ums/register.html', {'form': form})
 
 
 @login_required
