@@ -58,7 +58,7 @@ class ProfileEditForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['first_name', 'last_name', 'birth_date','location', 'avatar',  'bio']
+        fields = ['first_name', 'last_name', 'email', 'birth_date', 'location', 'avatar', 'bio']
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
