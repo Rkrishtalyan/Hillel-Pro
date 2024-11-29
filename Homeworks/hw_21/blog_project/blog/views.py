@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
-from blog.models import Post, Category
+from blog.models import Post, Category, Comment
 from blog.forms import PostForm
 
 
@@ -13,6 +13,19 @@ def post_list(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     comments = post.comments.all()
+
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            message = request.POST.get('message')
+            Comment.objects.create(
+                message=message,
+                user=request.user.userprofile,
+                post=post
+            )
+            return redirect('post_detail', post_id=post.id)
+        else:
+            return redirect('login')
+
     return render(request, 'blog/post_detail.html', {'post': post, 'comments': comments})
 
 

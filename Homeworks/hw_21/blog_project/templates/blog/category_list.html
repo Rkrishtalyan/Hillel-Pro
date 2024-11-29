@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<h2>Categories</h2>
+<ul>
+    {% for category in categories %}
+    <li>
+        <a href="{% url 'category_detail' category_id=category.id %}">{{ category.name }}</a>
+        ({{ category.post_set.count }} posts)
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
