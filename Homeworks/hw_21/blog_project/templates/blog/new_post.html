@@ -12,10 +12,14 @@
     </div>
 </div>
 <a href="{% url 'post_list' %}" class="btn btn-secondary mt-3">Back to Posts</a>
+
+<!-- Select2 Integration for Tags -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet">
 <script>
     $(document).ready(function() {
-        $('#id_tag').select2({
-            tags: true,
+        $('#id_tags').select2({
+            tags: true,  // Allow adding new tags
             tokenSeparators: [',', ' '],
             placeholder: "Select or create tags",
             allowClear: true,

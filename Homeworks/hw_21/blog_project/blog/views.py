@@ -50,22 +50,20 @@ def new_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            # Save the Post instance to get its ID
             post = form.save(commit=False)
             post.user = request.user.userprofile
-            post.save()  # Save the post to assign an ID
+            post.save()
 
-            # Handle dynamically created tags
-            tag_data = form.cleaned_data.get('tag')
-            for tag in tag_data:
-                # Create the tag if it doesn't exist
-                tag_instance, created = Tag.objects.get_or_create(name=tag)
-                post.tag.add(tag_instance)  # Add the tag to the post
+            # Handle tags dynamically
+            tag_string = form.cleaned_data.get('tags', '')
+            tag_list = [tag.strip() for tag in tag_string.split(',') if tag.strip()]
+            for tag_name in tag_list:
+                tag, created = Tag.objects.get_or_create(name=tag_name)
+                post.tag.add(tag)
 
-            post.save()  # Save the many-to-many relationship
+            post.save()
             return redirect('post_detail', post_id=post.id)
     else:
-        # Preselect the category if provided
         initial_data = {'category': category} if category else {}
         form = PostForm(initial=initial_data)
 
