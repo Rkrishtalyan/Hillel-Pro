@@ -15,6 +15,9 @@
 <ul class="list-group">
     {% for comment in comments %}
         <li class="list-group-item">
+            <small class="text-muted">
+                {{ comment.created_at|date:"M d, Y H:i" }} -
+            </small>
             <strong>{{ comment.user.username }}:</strong> {{ comment.message }}
         </li>
     {% empty %}
