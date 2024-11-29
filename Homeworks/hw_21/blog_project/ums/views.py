@@ -1,13 +1,12 @@
-from cProfile import Profile
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.contrib import messages
 
 from ums.forms import LoginForm, RegistrationForm, ProfileEditForm, CustomPasswordChangeForm
 from ums.models import UserProfile
+from utils.email import send_email
+
 
 
 def login_view(request):
@@ -46,10 +45,20 @@ def register_view(request):
             UserProfile.objects.create(user=user)
             login(request, user)
             messages.success(request, 'Registration successful.')
+
+            # Send welcome email
+            if user.email:
+                send_email(
+                    subject='Welcome to Our Blog!',
+                    template_name='emails/registration_email.html',
+                    context={'username': user.username},
+                    recipient_list=[user.email],
+                )
+
             return redirect('post_list')
     else:
         form = RegistrationForm()
-    return render(request,'ums/register.html', {'form': form})
+    return render(request, 'ums/register.html', {'form': form})
 
 
 @login_required
@@ -80,6 +89,16 @@ def change_password_view(request):
             user = form.save()
             update_session_auth_hash(request, user)
             messages.success(request, 'Your password has been updated.')
+
+            # Send email notification
+            if user.email:
+                send_email(
+                    subject='Password Changed Successfully',
+                    template_name='emails/password_change_email.html',
+                    context={'username': user.username},
+                    recipient_list=[user.email],
+                )
+
             return redirect('profile_view')
     else:
         form = CustomPasswordChangeForm(user=request.user)
