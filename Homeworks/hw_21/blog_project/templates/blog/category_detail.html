@@ -1,14 +1,21 @@
 {% extends "base.html" %}
-{% block title %}{{ category.name }}{% endblock %}
+{% block title %}Category: {{ category.name }}{% endblock %}
 {% block content %}
 <h2>Category: {{ category.name }}</h2>
-<p>{{ category.description }}</p>
+<p class="text-muted">{{ category.description }}</p>
 
 <h3>Posts in {{ category.name }}</h3>
-{% for post in posts %}
-    <h4><a href="{% url 'post_detail' post_id=post.id %}">{{ post.title }}</a></h4>
-    <p>{{ post.short_description }}</p>
-{% empty %}
-    <p>No posts in this category yet.</p>
-{% endfor %}
+<ul class="list-group">
+    {% for post in posts %}
+        <li class="list-group-item">
+            <a href="{% url 'post_detail' post_id=post.id %}" class="text-decoration-none">
+                <h5>{{ post.title }}</h5>
+            </a>
+            <p>{{ post.short_description }}</p>
+        </li>
+    {% empty %}
+        <li class="list-group-item">No posts in this category yet.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'category_list' %}" class="btn btn-secondary mt-3">Back to Categories</a>
 {% endblock %}
