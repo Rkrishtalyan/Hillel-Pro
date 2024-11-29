@@ -11,6 +11,16 @@
     <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid my-3">
 {% endif %}
 
+<!-- Tags for the post -->
+{% if post.tag.all %}
+    <h4 class="mt-4">Tags</h4>
+    <div>
+        {% for tag in post.tag.all %}
+            <span class="badge bg-primary me-1">{{ tag.name }}</span>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <h3>Comments</h3>
 <ul class="list-group">
     {% for comment in comments %}
