@@ -13,7 +13,7 @@ class LoginForm(forms.Form):
 
 
 class RegistrationForm(forms.ModelForm):
-    username = forms.CharField(label='Username', max_length=50, help_test='')
+    username = forms.CharField(label='Username', max_length=50, help_text='')
     password = forms.CharField(label='Password', widget=forms.PasswordInput, help_text='')
     confirm_password = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
     email = forms.EmailField(label='Email', required=True)
