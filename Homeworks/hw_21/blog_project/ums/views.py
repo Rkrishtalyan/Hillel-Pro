@@ -12,18 +12,18 @@ from ums.models import UserProfile
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('')
+        return redirect('post_list')
 
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 messages.success(request, 'You have successfully logged in.')
-                return redirect('')
+                return redirect('post_list')
             else:
                 messages.error(request, 'Invalid username or password')
     else:
@@ -46,7 +46,7 @@ def register_view(request):
             UserProfile.objects.create(user=user)
             login(request, user)
             messages.success(request, 'Registration successful.')
-            return redirect('')
+            return redirect('post_list')
     else:
         form = RegistrationForm()
     return render(request,'ums/register.html', {'form': form})
