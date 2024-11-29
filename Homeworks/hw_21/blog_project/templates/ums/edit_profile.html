@@ -1,39 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Edit Profile{% endblock %}
 {% block content %}
-<h2 class="text-center mb-4">Edit Profile</h2>
+<h2>Edit Profile</h2>
 <div class="card p-4 shadow">
     <form method="post" enctype="multipart/form-data" class="needs-validation">
         {% csrf_token %}
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="id_first_name" class="form-label">First Name:</label>
-                {{ form.first_name|add_class:"form-control" }}
+                <label for="id_first_name" class="form-label">First name:</label>
+                <input type="text" name="first_name" class="form-control" id="id_first_name" value="{{ form.first_name.value }}">
             </div>
             <div class="col-md-6">
-                <label for="id_last_name" class="form-label">Last Name:</label>
-                {{ form.last_name|add_class:"form-control" }}
+                <label for="id_last_name" class="form-label">Last name:</label>
+                <input type="text" name="last_name" class="form-control" id="id_last_name" value="{{ form.last_name.value }}">
             </div>
         </div>
         <div class="mb-3">
             <label for="id_email" class="form-label">Email:</label>
-            {{ form.email|add_class:"form-control" }}
+            <input type="email" name="email" class="form-control" id="id_email" value="{{ form.email.value }}">
         </div>
         <div class="mb-3">
-            <label for="id_birth_date" class="form-label">Birth Date:</label>
-            {{ form.birth_date|add_class:"form-control" }}
+            <label for="id_birth_date" class="form-label">Birth date:</label>
+            <input type="date" name="birth_date" class="form-control" id="id_birth_date" value="{{ form.birth_date.value }}">
         </div>
         <div class="mb-3">
             <label for="id_location" class="form-label">Location:</label>
-            {{ form.location|add_class:"form-control" }}
+            <input type="text" name="location" class="form-control" id="id_location" value="{{ form.location.value }}">
         </div>
         <div class="mb-3">
             <label for="id_avatar" class="form-label">Avatar:</label>
-            {{ form.avatar|add_class:"form-control" }}
+            <input type="file" name="avatar" class="form-control" id="id_avatar">
         </div>
         <div class="mb-3">
             <label for="id_bio" class="form-label">Bio:</label>
-            {{ form.bio|add_class:"form-control" }}
+            <textarea name="bio" rows="4" class="form-control" id="id_bio">{{ form.bio.value }}</textarea>
         </div>
         <button type="submit" class="btn btn-success">Save Changes</button>
     </form>
