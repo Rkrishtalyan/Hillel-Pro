@@ -80,7 +80,6 @@ def edit_profile(request):
     return render(request, 'ums/edit_profile.html', {'form': form})
 
 
-
 @login_required
 def change_password_view(request):
     if request.method == 'POST':
@@ -99,7 +98,7 @@ def change_password_view(request):
                     recipient_list=[user.email],
                 )
 
-            return redirect('profile_view')
+            return redirect('profile_view', username=request.user.username)
     else:
         form = CustomPasswordChangeForm(user=request.user)
     return render(request, 'ums/change_password.html', {'form': form})
