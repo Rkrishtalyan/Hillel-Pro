@@ -6,7 +6,7 @@
     <div class="row align-items-center">
         <div class="col-md-4 text-center">
             {% if profile_user.userprofile.avatar %}
-                <img src="{{ profile_user.avatar.url }}" class="rounded-circle img-fluid" alt="Profile Avatar" style="max-height: 200px;">
+                <img src="/avatars/{{ profile_user.userprofile.avatar.name }}" class="rounded-circle img-fluid" alt="Profile Avatar" style="max-height: 200px;">
             {% else %}
                 <img src="https://via.placeholder.com/200" class="rounded-circle img-fluid" alt="Default Avatar">
             {% endif %}
