@@ -54,7 +54,7 @@ def register_view(request):
 
 @login_required
 def profile_view(request, username):
-    user_profile = get_object_or_404(UserProfile, username=username)
+    user_profile = get_object_or_404(UserProfile, user__username=username)
     return render(request, 'ums/profile.html', {'profile_user': user_profile})
 
 
