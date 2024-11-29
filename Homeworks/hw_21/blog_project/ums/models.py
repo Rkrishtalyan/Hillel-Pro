@@ -15,6 +15,10 @@ class UserProfile(models.Model):
     def username(self):
         return self.user.username
 
+    @property
+    def email(self):
+        return self.user.email
+
     # @property
     # def first_name(self):
     #     return self.user.first_name
