@@ -3,15 +3,24 @@
 {% block content %}
 <h2>{{ post.title }}</h2>
 <p>By <strong>{{ post.user.username }}</strong> on {{ post.created_at }}</p>
+
+{% if post.image %}
+    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid my-3">
+{% endif %}
+
 <p>{{ post.body }}</p>
+
 <h3>Comments</h3>
 <ul class="list-group">
     {% for comment in comments %}
-        <li class="list-group-item"><strong>{{ comment.user.username }}:</strong> {{ comment.message }}</li>
+        <li class="list-group-item">
+            <strong>{{ comment.user.username }}:</strong> {{ comment.message }}
+        </li>
     {% empty %}
         <li class="list-group-item">No comments yet.</li>
     {% endfor %}
 </ul>
+
 {% if user.is_authenticated %}
     <h3>Add a Comment</h3>
     <form method="post">
