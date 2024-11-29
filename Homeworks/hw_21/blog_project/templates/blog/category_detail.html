@@ -17,5 +17,12 @@
         <li class="list-group-item">No posts in this category yet.</li>
     {% endfor %}
 </ul>
+
+<!-- Back to Categories Button -->
 <a href="{% url 'category_list' %}" class="btn btn-secondary mt-3">Back to Categories</a>
+
+<!-- New Post Button -->
+{% if user.is_authenticated %}
+    <a href="{% url 'new_post' %}?category={{ category.id }}" class="btn btn-primary mt-3">Create New Post in {{ category.name }}</a>
+{% endif %}
 {% endblock %}

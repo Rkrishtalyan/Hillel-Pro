@@ -41,6 +41,11 @@ def category_detail(request, category_id):
 
 @login_required
 def new_post(request):
+    category_id = request.GET.get('category')
+    category = None
+    if category_id:
+        category = get_object_or_404(Category, id=category_id)
+
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
@@ -51,5 +56,5 @@ def new_post(request):
             post.send_creation_email()
             return redirect('post_detail', post_id=post.id)
     else:
-        form = PostForm()
+        form = PostForm(initial={'category': [category]})
     return render(request, 'blog/new_post.html', {'form': form})
