@@ -6,9 +6,12 @@
     {% for post in posts %}
         <a href="{% url 'post_detail' post_id=post.id %}" class="list-group-item list-group-item-action">
             <h5 class="mb-1">{{ post.title }}</h5>
-            {% if post.image %}
+            <!--{% if post.image %}
                 <img src="{{ post.image.url }}" alt="Post Image" class="img-thumbnail mb-2" style="max-height: 100px;">
-            {% endif %}
+            {% endif %}-->
+            <small>
+                Posted on {{ post.created_at }} by <strong>{{ post.user.username }}</strong>
+            </small>
             <small>Posted on {{ post.created_at }}</small>
             <p class="mb-1">{{ post.short_description }}</p>
         </a>
