@@ -61,7 +61,6 @@ def new_post(request):
                 tag, created = Tag.objects.get_or_create(name=tag_name)
                 post.tag.add(tag)
 
-            post.save()
             return redirect('post_detail', post_id=post.id)
     else:
         initial_data = {'category': category} if category else {}
