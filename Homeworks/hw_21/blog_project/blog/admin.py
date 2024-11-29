@@ -24,10 +24,10 @@ class CommentInline(admin.TabularInline):
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'short_description', 'created_at', 'user', 'view_comments_link')
+    list_display = ('id', 'title', 'short_description', 'created_at', 'user', 'is_active', 'view_comments_link')
     list_filter = ('created_at', 'is_active')
     search_fields = ('title', 'body')
-    filter_horizontal = ('category', 'tag')
+    filter_horizontal = ('tag',)
     inlines = [CommentInline]
 
     def view_comments_link(self, obj):
