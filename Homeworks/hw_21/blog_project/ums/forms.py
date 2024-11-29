@@ -55,7 +55,6 @@ class RegistrationForm(forms.ModelForm):
 
 class ProfileEditForm(forms.ModelForm):
     birth_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    email = forms.EmailField(required=False)  # Add email as a custom field
 
     class Meta:
         model = UserProfile
@@ -72,22 +71,6 @@ class ProfileEditForm(forms.ModelForm):
         allowed_tags = ['b', 'i', 'u', 'strong', 'em', 'p', 'ul', 'ol', 'li']
         bio = bleach.clean(bio, tags=allowed_tags, strip=True)
         return bio
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Get the user instance from kwargs
-        super().__init__(*args, **kwargs)
-        if user:
-            self.fields['email'].initial = user.email  # Initialize email with the user's current email
-
-    def save(self, commit=True):
-        profile = super().save(commit=False)
-        # Save the email field to the associated User model
-        user = profile.user
-        user.email = self.cleaned_data.get('email', user.email)
-        if commit:
-            user.save()
-            profile.save()
-        return profile
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):

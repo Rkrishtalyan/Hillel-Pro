@@ -6,6 +6,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
     bio = models.TextField(max_length=500, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=100, blank=True)
@@ -14,10 +15,6 @@ class UserProfile(models.Model):
     @property
     def username(self):
         return self.user.username
-
-    @property
-    def email(self):
-        return self.user.email
 
     # @property
     # def first_name(self):
