@@ -61,13 +61,13 @@ def profile_view(request, username):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        form = ProfileEditForm(request.POST, request.FILES, instance=request.user.userprofile)
+        form = ProfileEditForm(request.POST, request.FILES, instance=request.user.userprofile, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, 'Your profile has been updated.')
             return redirect('profile_view', username=request.user.username)
     else:
-        form = ProfileEditForm(instance=request.user.userprofile)
+        form = ProfileEditForm(instance=request.user.userprofile, user=request.user)
     return render(request, 'ums/edit_profile.html', {'form': form})
 
 
