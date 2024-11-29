@@ -6,7 +6,7 @@
     <div class="row align-items-center">
         <div class="col-md-4 text-center">
             {% if profile_user.userprofile.avatar %}
-                <img src="/avatars/{{ profile_user.userprofile.avatar.name }}" class="rounded-circle img-fluid" alt="Profile Avatar" style="max-height: 200px;">
+                <img src="/avatars/{{ profile_user.avatar.name }}" class="rounded-circle img-fluid" alt="Profile Avatar" style="max-height: 200px;">
             {% else %}
                 <img src="https://via.placeholder.com/200" class="rounded-circle img-fluid" alt="Default Avatar">
             {% endif %}
@@ -16,7 +16,7 @@
                 <li class="list-group-item"><strong>Username:</strong> {{ profile_user.username }}</li>
                 <li class="list-group-item"><strong>First Name:</strong> {{ profile_user.first_name }}</li>
                 <li class="list-group-item"><strong>Last Name:</strong> {{ profile_user.last_name }}</li>
-                <li class="list-group-item"><strong>Email:</strong> {{ profile_user.user.email|default:"None" }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ profile_user.email|default:"None" }}</li>
                 <li class="list-group-item"><strong>Birth Date:</strong> {{ profile_user.userprofile.birth_date|date:"M d, Y" }}</li>
                 <li class="list-group-item"><strong>Location:</strong> {{ profile_user.userprofile.location|default:"Not specified" }}</li>
                 <li class="list-group-item"><strong>Bio:</strong> {{ profile_user.userprofile.bio|default:"Not specified" }}</li>
