@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Posts{% endblock %}
 {% block content %}
-<h2>Posts</h2>
+<h2 class="mb-4">Posts</h2>
+<div class="d-flex mb-3">
+    <a href="{% url 'new_post' %}" class="btn btn-primary">Create New Post</a>
+</div>
 <div class="list-group">
-<a href="{% url 'new_post' %}" class="btn btn-primary mt-3">Create New Post</a>
     {% for post in posts %}
-        <a href="{% url 'post_detail' post_id=post.id %}" class="list-group-item list-group-item-action">
+        <a href="{% url 'post_detail' post_id=post.id %}" class="list-group-item list-group-item-action mb-3">
             <h5 class="mb-1">{{ post.title }}</h5>
             <!--{% if post.image %}
                 <img src="{{ post.image.url }}" alt="Post Image" class="img-thumbnail mb-2" style="max-height: 100px;">
@@ -23,6 +25,8 @@
                 </div>
             {% endif %}
         </a>
+    {% empty %}
+        <p class="text-muted">No posts available at the moment. Create a new one!</p>
     {% endfor %}
 </div>
 {% endblock %}
