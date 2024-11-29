@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<h2>Profile of {{ profile_user.username }}</h2>
+<p>First Name: {{ profile_user.first_name }}</p>
+<p>Last Name: {{ profile_user.last_name }}</p>
+<p>Email: {{ profile_user.email }}</p>
+<p>Bio: {{ profile_user.userprofile.bio }}</p>
+<p>Location: {{ profile_user.userprofile.location }}</p>
+{% if user == profile_user %}
+    <a href="{% url 'edit_profile' %}">Edit Profile</a> |
+    <a href="{% url 'change_password' %}">Change Password</a>
+{% endif %}
+{% endblock %}
