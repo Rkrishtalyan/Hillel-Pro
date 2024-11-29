@@ -5,8 +5,8 @@
 <div class="card shadow p-3 mb-4">
     <div class="row g-0">
         <div class="col-md-4">
-            {% if profile_user.userprofile.avatar %}
-                <img src="{{ profile_user.userprofile.avatar.url }}" class="img-fluid rounded-start" alt="Profile Avatar">
+            {% if profile_user.avatar %}
+                <img src="{{ profile_user.avatar.url }}" class="img-fluid rounded-start" alt="Profile Avatar">
             {% else %}
                 <img src="https://via.placeholder.com/150" class="img-fluid rounded-start" alt="Default Avatar">
             {% endif %}
@@ -17,15 +17,15 @@
                 <p class="card-text"><strong>First Name:</strong> {{ profile_user.first_name }}</p>
                 <p class="card-text"><strong>Last Name:</strong> {{ profile_user.last_name }}</p>
                 <p class="card-text"><strong>Username:</strong> {{ profile_user.username }}</p>
-                <p class="card-text"><strong>Email:</strong> {{ profile_user.email }}</p>
-                <p class="card-text"><strong>Location:</strong> {{ profile_user.userprofile.location }}</p>
-                <p class="card-text"><strong>Bio:</strong> {{ profile_user.userprofile.bio }}</p>
+                <p class="card-text"><strong>Email:</strong> {{ profile_user.user.email }}</p>
+                <p class="card-text"><strong>Location:</strong> {{ profile_user.location }}</p>
+                <p class="card-text"><strong>Bio:</strong> {{ profile_user.bio }}</p>
             </div>
         </div>
     </div>
 </div>
 
-{% if user == profile_user %}
+{% if user == profile_user.user %}
     <div class="d-flex justify-content-between">
         <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
         <a href="{% url 'change_password' %}" class="btn btn-warning">Change Password</a>
