@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.mail import send_mail
-
 from ums.models import UserProfile
 
 
@@ -16,7 +15,7 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=120)
+    name = models.CharField(max_length=120, unique=True)
 
     def __str__(self):
         return self.name
@@ -25,12 +24,13 @@ class Tag(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=120)
     body = models.TextField()
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    category = models.ManyToManyField(Category)
-    tag = models.ManyToManyField(Tag)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    tag = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return self.title

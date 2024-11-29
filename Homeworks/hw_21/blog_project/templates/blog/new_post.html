@@ -4,12 +4,22 @@
 <h2>Create New Post</h2>
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <form method="post" class="card p-3 shadow">
+        <form method="post" enctype="multipart/form-data" class="card p-3 shadow">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>
 <a href="{% url 'post_list' %}" class="btn btn-secondary mt-3">Back to Posts</a>
+<script>
+    $(document).ready(function() {
+        $('#id_tag').select2({
+            tags: true,
+            tokenSeparators: [',', ' '],
+            placeholder: "Select or create tags",
+            allowClear: true,
+        });
+    });
+</script>
 {% endblock %}

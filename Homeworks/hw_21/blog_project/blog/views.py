@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
-from blog.models import Post, Category, Comment
+from blog.models import Post, Category, Comment, Tag
 from blog.forms import PostForm
 
 
@@ -36,8 +36,9 @@ def category_list(request):
 
 def category_detail(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
-    posts = category.post_set.filter(is_active=True)
+    posts = Post.objects.filter(category=category, is_active=True)
     return render(request, 'blog/category_detail.html', {'category': category, 'posts': posts})
+
 
 @login_required
 def new_post(request):
@@ -47,14 +48,26 @@ def new_post(request):
         category = get_object_or_404(Category, id=category_id)
 
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user.userprofile
             post.save()
-            form.save_m2m()
-            post.send_creation_email()
+
+            # Handle dynamically created tags
+            tag_data = form.cleaned_data.get('tag')
+            for tag in tag_data:
+                if not Tag.objects.filter(name=tag).exists():
+                    new_tag = Tag.objects.create(name=tag)
+                    post.tag.add(new_tag)
+                else:
+                    post.tag.add(tag)
+
+            post.save()
             return redirect('post_detail', post_id=post.id)
     else:
-        form = PostForm(initial={'category': [category]})
+        # Preselect the category if provided
+        initial_data = {'category': category} if category else {}
+        form = PostForm(initial=initial_data)
+
     return render(request, 'blog/new_post.html', {'form': form})
