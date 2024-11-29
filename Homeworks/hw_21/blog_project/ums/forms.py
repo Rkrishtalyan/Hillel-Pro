@@ -8,15 +8,41 @@ from .models import UserProfile
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=50)
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'})
+    )
+
+
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 
 
 class RegistrationForm(forms.ModelForm):
-    username = forms.CharField(label='Username', max_length=50, help_text='')
-    password = forms.CharField(label='Password', widget=forms.PasswordInput, help_text='')
-    confirm_password = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
-    email = forms.EmailField(label='Email', required=True)
+    username = forms.CharField(
+        label='Username',
+        max_length=50,
+        help_text='',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Choose a username'})
+    )
+    email = forms.EmailField(
+        label='Email',
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'})
+    )
+    password = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'}),
+        help_text=''
+    )
+    confirm_password = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm your password'})
+    )
 
     class Meta:
         model = User
@@ -44,6 +70,7 @@ class RegistrationForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('Email already exists')
+        return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
