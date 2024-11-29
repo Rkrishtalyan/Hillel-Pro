@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
-from blog.models import Post, Category, Comment, Tag
+from blog.models import Post, Category, Tag, Comment
 from blog.forms import PostForm
 
 
@@ -50,16 +50,17 @@ def new_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
+            # Save the Post instance without committing
             post = form.save(commit=False)
             post.user = request.user.userprofile
-            post.save()
+            post.save()  # Save the post to assign an ID
 
-            # Handle tags dynamically
+            # Handle dynamically created tags
             tag_string = form.cleaned_data.get('tags', '')
             tag_list = [tag.strip() for tag in tag_string.split(',') if tag.strip()]
             for tag_name in tag_list:
                 tag, created = Tag.objects.get_or_create(name=tag_name)
-                post.tag.add(tag)
+                post.tag.add(tag)  # Associate tags with the post
 
             return redirect('post_detail', post_id=post.id)
     else:

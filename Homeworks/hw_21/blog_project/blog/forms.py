@@ -18,16 +18,6 @@ class PostForm(forms.ModelForm):
         }
 
     def save(self, commit=True):
+        # Save the post instance, defer tag handling to the view
         post = super().save(commit=False)
-        if commit:
-            post.save()
-
-        # Handle tags
-        tag_string = self.cleaned_data['tags']
-        tag_list = [tag.strip() for tag in tag_string.split(',') if tag.strip()]
-        post.tag.clear()  # Clear existing tags
-        for tag_name in tag_list:
-            tag, created = Tag.objects.get_or_create(name=tag_name)
-            post.tag.add(tag)
-
         return post
