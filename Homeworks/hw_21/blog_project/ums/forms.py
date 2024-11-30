@@ -17,11 +17,6 @@ class LoginForm(forms.Form):
     )
 
 
-from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
-
-
 class RegistrationForm(forms.ModelForm):
     username = forms.CharField(
         label='Username',
@@ -46,7 +41,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('username',)
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
@@ -68,7 +63,7 @@ class RegistrationForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        if UserProfile.objects.filter(email=email).exists():
             raise forms.ValidationError('Email already exists')
         return email
 
@@ -77,6 +72,7 @@ class RegistrationForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
+            UserProfile.objects.create(user=user, email=self.cleaned_data['email'])
         return user
 
 
@@ -102,7 +98,7 @@ class ProfileEditForm(forms.ModelForm):
 
 class CustomPasswordChangeForm(PasswordChangeForm):
 
-    def clean_new_password(self):
+    def clean_new_password1(self):
         old_password = self.cleaned_data.get('old_password')
         new_password1 = self.cleaned_data.get('new_password1')
         if old_password and new_password1 and new_password1 == old_password:

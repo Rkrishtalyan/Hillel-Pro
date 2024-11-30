@@ -8,7 +8,6 @@ from ums.models import UserProfile
 from utils.email import send_email
 
 
-
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('post_list')
@@ -42,17 +41,17 @@ def register_view(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            UserProfile.objects.create(user=user)
             login(request, user)
             messages.success(request, 'Registration successful.')
 
             # Send welcome email
-            if user.email:
+            user_profile = user.userprofile
+            if user_profile.email:
                 send_email(
                     subject='Welcome to Our Blog!',
                     template_name='emails/registration_email.html',
                     context={'username': user.username},
-                    recipient_list=[user.email],
+                    recipient_list=[user_profile.email],
                 )
 
             return redirect('post_list')
@@ -90,12 +89,13 @@ def change_password_view(request):
             messages.success(request, 'Your password has been updated.')
 
             # Send email notification
-            if user.email:
+            user_profile = user.userprofile
+            if user_profile.email:
                 send_email(
                     subject='Password Changed Successfully',
                     template_name='emails/password_change_email.html',
                     context={'username': user.username},
-                    recipient_list=[user.email],
+                    recipient_list=[user_profile.email],
                 )
 
             return redirect('profile_view', username=request.user.username)

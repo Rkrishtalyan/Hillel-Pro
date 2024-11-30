@@ -14,8 +14,8 @@
         <div class="col-md-8">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><strong>Username:</strong> {{ profile_user.username }}</li>
-                <li class="list-group-item"><strong>First Name:</strong> {{ profile_user.first_name }}</li>
-                <li class="list-group-item"><strong>Last Name:</strong> {{ profile_user.last_name }}</li>
+                <li class="list-group-item"><strong>First Name:</strong> {{ profile_user.first_name|default:"Not provided" }}</li>
+                <li class="list-group-item"><strong>Last Name:</strong> {{ profile_user.last_name|default:"Not provided" }}</li>
                 <li class="list-group-item"><strong>Email:</strong> {{ profile_user.email|default:"None" }}</li>
                 <li class="list-group-item"><strong>Birth Date:</strong> {{ profile_user.birth_date|date:"M d, Y" }}</li>
                 <li class="list-group-item"><strong>Location:</strong> {{ profile_user.location|default:"Not specified" }}</li>
