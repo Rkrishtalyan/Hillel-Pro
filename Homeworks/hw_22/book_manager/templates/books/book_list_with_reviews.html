@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Optimized Book List</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .book { margin-bottom: 20px; }
+        .authors, .reviews { margin-left: 20px; }
+        .review { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Books and Their Authors and Reviews</h1>
+    <ul>
+        {% for book in books %}
+            <li class="book">
+                <strong>{{ book.title }}</strong> (Published on {{ book.publication_date }})
+                <div class="authors">
+                    <strong>Authors:</strong>
+                    {% for author in book.authors.all %}
+                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="reviews">
+                    <strong>Reviews:</strong>
+                    <ul>
+                        {% for review in book.reviews.all %}
+                            <li class="review">
+                                <em>{{ review.reviewer_name }}</em> rated it {{ review.rating }}/5
+                                <p>{{ review.comment }}</p>
+                            </li>
+                        {% empty %}
+                            <li>No reviews yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+        {% empty %}
+            <li>No books available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

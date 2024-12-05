@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Books CSV</title>
+</head>
+<body>
+    <h1>Upload Books CSV</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="csv_file">Select CSV File:</label>
+        <input type="file" name="csv_file" id="csv_file" required><br><br>
+        <label for="email">Your Email:</label>
+        <input type="email" name="email" id="email" required><br><br>
+        <button type="submit">Upload and Import</button>
+    </form>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

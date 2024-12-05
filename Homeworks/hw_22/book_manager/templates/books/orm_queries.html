@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Queries</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container my-5">
+    <h1 class="mb-4">Average Rating by Author</h1>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Author Name</th>
+                <th scope="col">Average Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for author in authors %}
+                <tr>
+                    <td>{{ author.name }}</td>
+                    <td>
+                        {% if author.avg_books_rating %}
+                            {{ author.avg_books_rating|floatformat:1 }}
+                        {% else %}
+                            No reviews yet
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No authors found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h1 class="mb-4">Book Ratings Count</h1>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Book Title</th>
+                <th scope="col">Total Ratings</th>
+                <th scope="col">Average Rating Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.rating_count }}</td>
+                    <td>
+                        {% if book.avg_book_rating %}
+                            {{ book.avg_book_rating|floatformat:1 }}
+                        {% else %}
+                            No ratings yet
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No books found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

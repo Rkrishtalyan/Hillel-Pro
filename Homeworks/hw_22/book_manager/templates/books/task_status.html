@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Status</title>
+    <meta http-equiv="refresh" content="5"> <!-- Refresh every 5 seconds -->
+</head>
+<body>
+    <h1>Task Status</h1>
+    <p>Task ID: {{ task_id }}</p>
+    <p>Status: {{ task.status }}</p>
+    {% if task.status == 'SUCCESS' %}
+        <p>Task completed successfully.</p>
+    {% elif task.status == 'FAILURE' %}
+        <p>Task failed: {{ task.result }}</p>
+    {% else %}
+        <p>Task is {{ task.status }}. Please wait...</p>
+    {% endif %}
+    <p><a href="{% url 'upload_books_csv' %}">Back to Upload</a></p>
+</body>
+</html>

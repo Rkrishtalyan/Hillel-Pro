@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Greeting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #1a73e8;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .logout-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'book_list' %}">Book List</a>
+        <a href="{% url 'unoptimized_book_list' %}">Unoptimized Book List</a>
+        <a href="{% url 'optimized_book_list' %}">Optimized Book List</a>
+        <a href="{% url 'orm_queries' %}">ORM Queries</a>
+        <a href="{% url 'raw_sql_queries' %}">Raw SQL Queries (Postgres)</a>
+        <a href="{% url 'no_sql_orm_queries' %}">No SQL ORM Queries (Postgres)</a>
+        <a href="{% url 'upload_books_csv' %}">Upload CSV (MongoDB)</a>
+    </nav>
+    
+    <h1>Hello, {{ name }}! You are {{ age }} years old.</h1>
+    
+    <div class="logout-button">
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

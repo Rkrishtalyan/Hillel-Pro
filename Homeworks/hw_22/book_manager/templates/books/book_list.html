@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Books and Authors</h1>
+    <ul>
+        {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong> by
+                {% for author in book.authors.all %}
+                    {{ author.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

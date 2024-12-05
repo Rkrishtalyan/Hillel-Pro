@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authors with Books Over 10 Reviews & Total Books</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { color: #333; }
+        table { width: 25%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 8px 12px; border: 1px solid #ccc; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Authors with Books Having More Than 10 Reviews</h1>
+    {% if authors %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Author Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for author in authors %}
+                    <tr>
+                        <td>{{ author.name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No authors found with books having more than 10 reviews.</p>
+    {% endif %}
+
+    <h1>Total Number of Books: {{ total_books }}</h1>
+</body>
+</html>
