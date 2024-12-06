@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{%  load static %}
+{%  load custom_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <link rel="stylesheet" href="{% static 'testapp/css/styles.css' %}">
+    <title>{%  block title %} My Home Page {% endblock title %}</title>
+</head>
+<body>
+    <header>{% block header %} Home Page {% endblock %}</header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/custom">Custom</a></li>
+            </ul>
+        </nav>
+</body>
+<footer>
+    <p>{% current_date %}, IP: {{ ip }}</p>
+    <p>&copy; {{ current_year }} {{ site_name }}</p>
+</footer>
+</html>

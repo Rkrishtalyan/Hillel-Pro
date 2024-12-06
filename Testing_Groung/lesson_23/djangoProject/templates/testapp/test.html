@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{%  load custom_tags %}
+    <p>
+        Кількість слів {{ "Якийсь дуже довгий текст українською"|word_count }}
+    </p>
+    <p>
+        {%  greet_user "Django" %}
+    </p>
+</body>
+</html>

@@ -3,3 +3,4 @@
 2024-11-22 14:02:28,276 WARNING [ums.middleware] Unauthenticated access attempt to protected page: /profile/ruslank/ from IP: 127.0.0.1
 2024-11-22 14:02:44,153 WARNING [ums.middleware] Unauthenticated access attempt to protected page: /edit_profile/ from IP: 127.0.0.1
 2024-11-22 14:05:45,752 WARNING [ums.middleware] Page not found: /nonexistent_page
+2024-11-28 20:24:34,345 WARNING [ums.middleware] Page not found: /favicon.ico
