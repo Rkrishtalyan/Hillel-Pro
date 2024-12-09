@@ -1,0 +1,18 @@
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ SITE_NAME }}</title>
+</head>
+<body>
+    <h1>Welcome to {{ SITE_NAME }}</h1>
+    <h2>Recent Articles</h2>
+    {% latest_articles 3 as recent_articles %}
+    <ul>
+        {% for article in recent_articles %}
+            <li>{{ article.title|truncate_chars:10 }} - {{ article.category }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
