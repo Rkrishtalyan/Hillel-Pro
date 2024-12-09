@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reviewed News Articles</title>
+</head>
+<body>
+    <h1>Reviewed News Articles</h1>
+    {% if articles %}
+        <ul>
+        {% for article in articles %}
+            <li>
+                <strong>{{ article.title }}</strong><br>
+                Category: {{ article.get_category_display }}<br>
+                Reviewed: {{ article.reviewed }}<br>
+                <p>{{ article.body }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reviewed news articles found.</p>
+    {% endif %}
+</body>
+</html>
