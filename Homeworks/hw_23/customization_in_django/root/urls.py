@@ -17,10 +17,13 @@ from django.contrib import admin
 from django.urls import path
 
 from web_site.views import HomePageView, RegisterView
+from web_site.views_api import ArticleListCreateView, ArticleDetailView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomePageView.as_view(), name='home'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('api/articles/', ArticleListCreateView.as_view(), name='article-list-create'),
+    path('api/articles/<int:pk>/', ArticleDetailView.as_view(), name='article-detail'),
 ]
