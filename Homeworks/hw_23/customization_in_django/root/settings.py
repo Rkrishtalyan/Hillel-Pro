@@ -122,3 +122,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Task 6
+AUTH_USER_MODEL = 'web_site.CustomUser'

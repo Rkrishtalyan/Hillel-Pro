@@ -1,5 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
+import re
+
+from web_site.models import CustomUser
 
 
 # Task 2
@@ -35,3 +39,24 @@ class ArticleForm(forms.Form):
         widget=CustomSelectWidget,
         label="Category"
     )
+
+
+# Task 6
+
+def validate_phone_number(value):
+    pattern = r'^\+\d{10,12}$'
+    if not re.match(pattern, value):
+        raise ValidationError("Phone number must start with '+' and contain 10 to 12 digits.")
+
+
+class RegistrationForm(UserCreationForm):
+    phone_number = forms.CharField(
+        max_length=13,
+        required=True,
+        validators=[validate_phone_number],
+        label="Phone Number"
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'phone_number', 'password1', 'password2']
