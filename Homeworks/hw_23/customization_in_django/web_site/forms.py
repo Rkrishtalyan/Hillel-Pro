@@ -15,7 +15,7 @@ def validate_body_contains_curse_words(value):
 
 
 class CustomSelectWidget(forms.Select):
-    template_name = 'widgets/custom_select.html'
+    template_name = 'web_site/widgets/custom_select.html'
 
     def __init__(self, attrs=None, choices=()):
         default_attrs = {'class': 'custom-select-widget', 'label': 'Category'}

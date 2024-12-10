@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from web_site.views import HomePageView, RegisterView, ReviewedNewsView
+from web_site.views import HomePageView, RegisterView, ReviewedNewsView, ArticleCreateView
 from web_site.views_api import ArticleListCreateView, ArticleDetailView
 
 
@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/articles/', ArticleListCreateView.as_view(), name='article-list-create'),
     path('api/articles/<int:pk>/', ArticleDetailView.as_view(), name='article-detail'),
     path('reviewed-news/', ReviewedNewsView.as_view(), name='reviewed-news'),
+    path('articles/create/', ArticleCreateView.as_view(), name='article-create'),
 ]

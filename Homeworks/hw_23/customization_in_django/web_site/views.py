@@ -10,11 +10,11 @@ from web_site.utils import fetch_reviewed_news_articles
 
 
 class HomePageView(TemplateView):
-    template_name = 'home.html'
+    template_name = 'web_site/home.html'
 
 
 class RegisterView(FormView):
-    template_name = 'registration.html'
+    template_name = 'web_site/registration.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('home')
 
@@ -26,7 +26,7 @@ class RegisterView(FormView):
 # Task 8
 
 class ReviewedNewsView(TemplateView):
-    template_name = 'reviewed_news.html'
+    template_name = 'web_site/reviewed_news.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
