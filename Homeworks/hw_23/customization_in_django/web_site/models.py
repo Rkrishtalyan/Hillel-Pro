@@ -49,3 +49,11 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+# Task 9
+class SiteMetric(models.Model):
+    request_count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Total Requests: {self.request_count}"

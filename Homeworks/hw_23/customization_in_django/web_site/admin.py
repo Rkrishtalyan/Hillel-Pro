@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, Comment
+from web_site.models import Article, Comment, SiteMetric
 
 
 class CommentInline(admin.TabularInline):
@@ -25,3 +25,10 @@ class ArticleAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('article', 'text', 'created_at')
     list_filter = ('article', 'created_at')
+
+
+# Task 9
+
+@admin.register(SiteMetric)
+class SiteMetricAdmin(admin.ModelAdmin):
+    list_display = ('request_count',)

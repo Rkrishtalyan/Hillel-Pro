@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'web_site.middleware.CustomHeaderMiddleware',
+    'web_site.middleware.MetricsMiddleware',
 ]
 
 ROOT_URLCONF = 'root.urls'
@@ -131,4 +132,31 @@ AUTH_USER_MODEL = 'web_site.CustomUser'
 # Task 7
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
+#Task 9
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/web_site.log',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'web_site.custom': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }
