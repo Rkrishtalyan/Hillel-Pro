@@ -1,5 +1,5 @@
 from django.contrib import admin
-from web_site.models import Article, Comment, SiteMetric
+from web_site.models import Article, Comment, SiteMetric, Contact
 
 
 class CommentInline(admin.TabularInline):
@@ -15,7 +15,7 @@ mark_as_reviewed.short_description = "Mark selected articles as reviewed"
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'reviewed')
+    list_display = ('title', 'category', 'reviewed', 'contact')
     list_filter = ('category', 'reviewed')
     actions = [mark_as_reviewed]
     inlines = [CommentInline]
@@ -32,3 +32,10 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(SiteMetric)
 class SiteMetricAdmin(admin.ModelAdmin):
     list_display = ('request_count',)
+
+
+# Task 10
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone')

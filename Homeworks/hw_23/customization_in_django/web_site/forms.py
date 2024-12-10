@@ -3,7 +3,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 import re
 
-from web_site.models import CustomUser
+from web_site.models import CustomUser, Contact
+from web_site.form_fields import PhoneNumberFormField
 
 
 # Task 2
@@ -39,6 +40,11 @@ class ArticleForm(forms.Form):
         widget=CustomSelectWidget,
         label="Category"
     )
+    contact = forms.ModelChoiceField(
+        queryset=Contact.objects.all(),
+        label="Contact",
+        required=False
+    )
 
 
 # Task 6
@@ -60,3 +66,13 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'phone_number', 'password1', 'password2']
+
+
+# Task 10
+
+class ContactForm(forms.ModelForm):
+    phone = PhoneNumberFormField(label="Phone Number")
+
+    class Meta:
+        model = Contact
+        fields = ['name', 'phone']
