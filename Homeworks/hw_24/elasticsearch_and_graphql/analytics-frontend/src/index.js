@@ -5,15 +5,46 @@ import App from './App';
 import {ApolloProvider} from "@apollo/client";
 import client from './apolloClient';
 import DataDocuments from './components/DataDocuments';
+import Clients from './components/Clients';
+import Pets from './components/Pets';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { documentsClient, clientsClient, petsClient } from './apolloClient';
 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+
 root.render(
-  <React.StrictMode>
-      <ApolloProvider client={client}>
-          <DataDocuments />
-      </ApolloProvider>
-  </React.StrictMode>
+    <React.StrictMode>
+        <Router>
+            <Routes>
+                <Route
+                    path="/documents"
+                    element={
+                    <ApolloProvider client={documentsClient}>
+                        <DataDocuments />
+                    </ApolloProvider>
+                }
+                />
+                <Route
+                    path="/clients"
+                    element={
+                    <ApolloProvider client={clientsClient}>
+                        <Clients />
+                    </ApolloProvider>
+                }
+                />
+                <Route
+                    path="/pets"
+                    element={
+                    <ApolloProvider client={petsClient}>
+                        <Pets />
+                    </ApolloProvider>
+                }
+                />
+            </Routes>
+        </Router>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

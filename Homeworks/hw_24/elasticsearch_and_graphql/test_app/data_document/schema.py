@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 
-from test_app.models import DataDocument
+from test_app.data_document.models import DataDocument
 
 
 class DataDocumentType(DjangoObjectType):
@@ -23,17 +23,17 @@ class CreateDataDocument(graphene.Mutation):
         return CreateDataDocument(data_document=new_document)
 
 
-class Query(graphene.ObjectType):
+class DataDocumentQuery(graphene.ObjectType):
     all_data_documents = graphene.List(DataDocumentType)
 
     # def resolve_all_data(self, info):
-    #     return DataDocument.search.execute()
+    #     return data_document.search.execute()
 
     def resolve_all_data_documents(self, info):
         return DataDocument.objects.all()
 
 
-class Mutation(graphene.ObjectType):
+class DataDocumentMutation(graphene.ObjectType):
     create_data_document = CreateDataDocument.Field()
 
     # class Arguments:
@@ -43,7 +43,7 @@ class Mutation(graphene.ObjectType):
     # success = graphene.Boolean()
     #
     # def mutate(self, title, description):
-    #     data = DataDocument(title=title, description=description)
+    #     data = data_document(title=title, description=description)
     #     data.save()
     #     return Mutation(success=True)
 
@@ -52,4 +52,4 @@ class Mutation(graphene.ObjectType):
         return new_document
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation)
+schema = graphene.Schema(query=DataDocumentQuery, mutation=DataDocumentMutation)
