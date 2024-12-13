@@ -1,0 +1,19 @@
+pip freeze > requirements.txt
+
+docker login
+
+docker build -t django-app .
+
+docker run -d -p 8001:8001 django-app
+
+docker-compose up
+
+docker-compose down
+
+docker-compose ps
+
+docker-compose exec web bash
+
+docker-compose exec web python3 manage.py makemigrations
+
+docker-compose exec web python3 manage.py migrate
