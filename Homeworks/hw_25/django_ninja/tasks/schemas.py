@@ -32,3 +32,11 @@ class TaskUpdateSchema(BaseModel):
     status: Optional[str]
     priority: Optional[int]
     due_date: Optional[datetime]
+
+
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+
+class TokenSchema(BaseModel):
+    token: str
