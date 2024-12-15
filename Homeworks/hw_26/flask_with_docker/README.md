@@ -36,8 +36,8 @@ Before you begin, ensure you have the following installed on your system:
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/Rkrishtalyan/Hillel-Pro/tree/main/Homeworks/hw_26
-   cd 1_flask_with_docker
+   git clone https://github.com/Rkrishtalyan/Hillel-Pro/tree/main/Homeworks/hw_26/flask_with_docker
+   cd flask_with_docker
    ```
 
 2. **Install Flask Dependencies:**
