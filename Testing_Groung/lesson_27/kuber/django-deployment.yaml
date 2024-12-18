@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lesson27
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lesson27
+  template:
+    metadata:
+      labels:
+        app: lesson27
+    spec:
+      containers:
+        - name: web
+          image: lesson27-image:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DJANGO_SECRET_KEY
+              value: YOUR_SECRET_KEY
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "127.0.0.1 .localhost"
+---
+apiVersion: v1
+kind: service
+metadata:
+  name: lesson27-service
+spec:
+  selector:
+    app: lesson27
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type:
+    LoadBalancer
