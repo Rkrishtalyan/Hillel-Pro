@@ -1,0 +1,17 @@
+<!-- myapp/templates/home.html -->
+<html>
+<head>
+    <title>My K8s Django App</title>
+</head>
+<body>
+    <h1>Welcome to Django on Kubernetes!</h1>
+    <p>Here are the latest entries:</p>
+    <ul>
+    {% for e in entries %}
+      <li>{{ e.title }} ({{ e.created_at }})</li>
+    {% empty %}
+      <li>No entries yet.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

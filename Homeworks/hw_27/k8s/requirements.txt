@@ -1,0 +1,4 @@
+Django==5.1.4
+psycopg2==2.9.10
+mysqlclient==2.2.6
+django-prometheus

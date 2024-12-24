@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-exporter
+  namespace: k8s-space
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-exporter
+  template:
+    metadata:
+      labels:
+        app: postgres-exporter
+    spec:
+      containers:
+      - name: postgres-exporter
+        image: prometheuscommunity/postgres-exporter
+        env:
+          - name: DATA_SOURCE_NAME
+            value: "postgresql://POSTGRES_USER:POSTGRES_PASSWORD@postgres-service.k8s-space.svc.cluster.local:5432/<POSTGRES_DB>?sslmode=disable"
+        ports:
+          - containerPort: 9187

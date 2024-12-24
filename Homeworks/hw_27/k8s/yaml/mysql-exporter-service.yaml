@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-exporter
+  namespace: k8s-space
+spec:
+  ports:
+    - port: 9104
+      targetPort: 9104
+  selector:
+    app: mysql-exporter

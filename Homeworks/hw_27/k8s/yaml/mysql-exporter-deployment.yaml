@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-exporter
+  namespace: k8s-space
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-exporter
+  template:
+    metadata:
+      labels:
+        app: mysql-exporter
+    spec:
+      containers:
+      - name: mysql-exporter
+        image: prom/mysqld-exporter
+        env:
+          - name: DATA_SOURCE_NAME
+            value: "MYSQL_USER:MYSQL_PASSWORD@(mysql-service.k8s-space.svc.cluster.local:3306)/"
+        ports:
+          - containerPort: 9104

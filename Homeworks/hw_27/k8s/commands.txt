@@ -1,0 +1,35 @@
+minikube start
+
+--docker build -t docker_and_docker_compose-web:v4 .
+
+minikube image load docker_and_docker_compose-web:v4
+
+kubectl create namespace k8s-space
+kubectl config set-context --current --namespace=k8s-space
+
+kubectl apply -f yaml/secrets.yaml
+kubectl apply -f yaml/configmap.yaml
+kubectl apply -f yaml/pv-pvc.yaml
+kubectl apply -f yaml/postgres-statefulset.yaml
+kubectl apply -f yaml/postgres-service.yaml
+kubectl apply -f yaml/postgres-exporter-deployment.yaml
+kubectl apply -f yaml/postgres-exporter-service.yaml
+kubectl apply -f yaml/mysql-statefulset.yaml
+kubectl apply -f yaml/mysql-service.yaml
+kubectl apply -f yaml/mysql-exporter-deployment.yaml
+kubectl apply -f yaml/mysql-exported-service.yaml
+kubectl apply -f yaml/django-deployment.yaml
+kubectl apply -f yaml/django-service.yaml
+kubectl apply -f yaml/prometheus-configmap.yaml
+kubectl apply -f yaml/prometheus-deployment.yaml
+kubectl apply -f yaml/prometheus-service.yaml
+kubectl apply -f yaml/grafana-deployment.yaml
+kubectl apply -f yaml/grafana-service.yaml
+
+docker build --no-cache -t django-k8s-image:v4 .
+
+minikube service django-service -n k8s-space
+minikube service prometheus-service -n k8s-scace
+minikube service grafana-service -n k8s-space
+
+kubectl scale deploy/django --replicas=2
