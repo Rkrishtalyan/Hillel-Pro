@@ -1,0 +1,7 @@
+2024-12-24 07:37:02,636 - INFO - Bot started polling.
+2024-12-24 07:37:10,896 - INFO - Received weather request for city: Kharkiv from user 38292489
+2024-12-24 07:37:10,991 - INFO - Successful API request for city: Kharkiv in 0.09 seconds
+2024-12-24 07:46:11,585 - INFO - Received weather request for city: Kyiv from user 38292489
+2024-12-24 07:46:11,693 - INFO - Successful API request for city: Kyiv in 0.11 seconds
+2024-12-24 07:46:11,988 - INFO - Received weather request for city: Kharkiv from user 38292489
+2024-12-24 07:46:12,073 - INFO - Successful API request for city: Kharkiv in 0.09 seconds

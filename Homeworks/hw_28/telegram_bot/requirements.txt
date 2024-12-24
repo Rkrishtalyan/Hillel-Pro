@@ -1,0 +1,5 @@
+aiohttp==3.11.11
+python-dotenv==1.0.1
+python-telegram-bot==21.9
+requests==2.32.3
+certifi==2024.12.14
