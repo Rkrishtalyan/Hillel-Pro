@@ -1,0 +1,26 @@
+kubectl apply -f secrets.yaml
+kubectl apply -f configmap.yaml
+
+kubectl apply -f postgres-pvc.yaml
+
+kubectl apply -f postgres-patroni-configmap.yaml
+kubectl apply -f postgres-statefulset.yaml
+kubectl apply -f postgres-service.yaml
+
+kubectl apply -f "https://raw.githubusercontent.com/percona/percona-xtradb-cluster-operator/main/deploy/bundle.yaml"
+
+kubectl apply -f mysql-pxc-cluster.yaml
+kubectl apply -f mysql-service.yaml
+
+kubectl apply -f django-deployment.yaml
+kubectl apply -f django-service.yaml
+
+kubectl apply -f prometheus-configmap.yaml
+kubectl apply -f prometheus-deployment.yaml
+kubectl apply -f prometheus-service.yaml
+
+kubectl apply -f postgres-exporter.yaml
+kubectl apply -f mysql-exporter.yaml
+
+kubectl apply -f grafana-deployment.yaml
+kubectl apply -f grafana-service.yaml

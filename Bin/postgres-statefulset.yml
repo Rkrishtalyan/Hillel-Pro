@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 3
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: patroni
+        image: registry.opensource.zalan.do/acid/spilo-14:2.1-p5
+        env:
+        - name: PATRONI_KUBERNETES_LABELS
+          value: '{"app":"postgres"}'
+        - name: PATRONI_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PATRONI_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PATRONI_POSTGRESQL_DATA_DIR
+          value: /var/lib/postgresql/data
+        - name: PATRONI_POSTGRESQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_PASSWORD
+        - name: PATRONI_POSTGRESQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_USER
+        - name: PATRONI_POSTGRESQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: POSTGRES_DB
+        - name: PATRONI_RESTAPI_LISTEN
+          value: "0.0.0.0:8008"
+        - name: PATRONI_RESTAPI_CONNECT_ADDRESS
+          value: "0.0.0.0:8008"
+        - name: PATRONI_SCOPE
+          value: "pg-cluster"
+        - name: PATRONI_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              name: patroni-config
+              key: patroni.yaml
+        volumeMounts:
+        - name: pgdata
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: pgdata
+        persistentVolumeClaim:
+          claimName: postgres-pvc

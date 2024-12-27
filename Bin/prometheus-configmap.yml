@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+    - job_name: 'postgres'
+      static_configs:
+      - targets: ['postgres-exporter:9187']
+    - job_name: 'mysql'
+      static_configs:
+      - targets: ['mysql-exporter:9104']
+    # Add django if /metrics available:
+    # - job_name: 'django'
+    #   static_configs:
+    #   - targets: ['django-service:80']

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config
+data:
+  DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+  DJANGO_DEBUG: "True"

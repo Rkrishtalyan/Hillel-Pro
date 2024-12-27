@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: patroni-config
+data:
+  patroni.yaml: |
+    bootstrap:
+      dcs:
+        postgresql:
+          parameters:
+            max_connections: 100
+          pg_hba:
+            - host all all 0.0.0.0/0 md5
+          use_pg_rewind: true
+        loop_wait: 10
+        retries: 3
+        ttl: 30
+      initdb:
+        - auth-host: md5
+        - auth-local: trust
+    postgresql:
+      data_dir: /var/lib/postgresql/data
+      pgpass: /tmp/pgpass
+    restapi:
+      listen: 0.0.0.0:8008
+      connect_address: 0.0.0.0:8008
+    tags:
+      nofailover: false
+      noloadbalance: false
+      clonefrom: false

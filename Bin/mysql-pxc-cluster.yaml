@@ -1,0 +1,31 @@
+apiVersion: pxc.percona.com/v1
+kind: PerconaXtraDBCluster
+metadata:
+  name: mysql-cluster
+spec:
+  platform: kubernetes
+  crVersion: 1.11.0
+  secretsName: db-credentials
+  sslSecretName: mysql-ssl
+  pxc:
+    image: percona/percona-xtradb-cluster:8.0.33-29.1
+    clusterName: mysql-cluster
+    size: 3
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: "0.5"
+    volumeSpec:
+      persistentVolumeClaim:
+        resources:
+          requests:
+            storage: 5Gi
+  proxysql:
+    enabled: false
+  haproxy:
+    enabled: true
+    size: 1
+  logcollector:
+    enabled: false
+  backup:
+    enabled: false
