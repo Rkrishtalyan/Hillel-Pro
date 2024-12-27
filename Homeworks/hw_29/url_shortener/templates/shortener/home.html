@@ -1,0 +1,14 @@
+{% extends 'shortener/base.html' %}
+{% block title %} Short URL {% endblock %}
+{% block content %}
+<h1>Shortener URL:</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit"> Short </button>
+</form>
+{% if short_url %}
+    <p>short_url: <a href="{{ short_url }}">{{ short_url }}</a></p>
+    <p>clicks: {{ clicks }}</p>
+{% endif %}
+{% endblock %}
