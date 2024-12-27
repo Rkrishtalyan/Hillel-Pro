@@ -1,22 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
-<br>
-<form method="POST">
+{% extends 'shortener/base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+  <h1>Login</h1>
+
+  <form method="POST">
     {% csrf_token %}
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required>
-    <br>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-</form>
-{% if form.errors %}
-    <p>Incorrect username or password</p>
-{% endif %}
-</body>
-</html>
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+
+  {% if form.errors %}
+    <p style="color: red;">
+      Incorrect username or password.
+    </p>
+  {% endif %}
+
+  <p>
+    Don’t have an account yet?
+    <a href="{% url 'register' %}">
+      Sign up!
+    </a>
+  </p>
+{% endblock %}

@@ -14,7 +14,6 @@ class URL(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-
     def save(self, *args, **kwargs):
         if not self.short_url:
             self.short_url = generate_short_url()

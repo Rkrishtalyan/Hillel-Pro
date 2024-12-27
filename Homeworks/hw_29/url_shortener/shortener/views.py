@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import URLForm
+from .forms import URLForm, RegistrationForm
 from .models import URL, URLClick
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 
 
 @login_required(login_url='login')
@@ -32,7 +33,7 @@ def home(request):
 
 def redirect_to_url(request, short_url):
     url = get_object_or_404(URL, short_url=short_url)
-    URLClick.objects.create(url=url, created_by=request.user if request.user.is_authenticated else None)
+    URLClick.objects.create(url=url, user=request.user if request.user.is_authenticated else None)
     return redirect(url.original_url)
 
 
@@ -40,3 +41,15 @@ def redirect_to_url(request, short_url):
 def user_statistics(request):
     urls = URL.objects.filter(created_by=request.user)
     return render(request, 'shortener/statistics.html', {'urls': urls})
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = RegistrationForm()
+    return render(request, 'shortener/register.html', {'form': form})
