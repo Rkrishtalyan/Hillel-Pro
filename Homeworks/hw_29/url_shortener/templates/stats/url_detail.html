@@ -1,4 +1,5 @@
 {% extends "shortener/base.html" %}
+{% load static %}
 {% block title %}URL Details{% endblock %}
 
 {% block content %}
@@ -6,7 +7,16 @@
   <a href="{% url 'stats:urls_list' %}" class="me-2 text-decoration-none">
     ←
   </a>
-  Details for {{ url_obj.short_url }}
+  Details for
+  {% if url_obj.custom_name %}
+    "{{ url_obj.custom_name }}"
+  {% else %}
+    "{{ url_obj.short_url }}"
+  {% endif %}
+
+  <a href="#" class="ms-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#renameModal">
+    <i class="bi bi-pencil"></i>
+  </a>
 </h1>
 
 <div class="mb-3">
@@ -111,4 +121,40 @@
 {% endif %}
 
 <a href="{% url 'home' %}" class="btn btn-secondary mt-4">Back to Home</a>
+
+<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{% url 'stats:rename_link' url_obj.short_url %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="renameModalLabel">Rename Your Link</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="custom_name" class="form-label">New Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="custom_name"
+            id="custom_name"
+            value="{{ url_obj.custom_name }}"
+          />
+          <div class="form-text">
+            If left blank, the link's name is just "{{ url_obj.short_url }}".
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

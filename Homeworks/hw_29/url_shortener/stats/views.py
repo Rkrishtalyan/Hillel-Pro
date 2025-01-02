@@ -1,10 +1,22 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
 
 from shortener.models import URL
+
+
+@login_required
+def rename_link(request, short_url):
+    url_obj = get_object_or_404(URL, short_url=short_url, created_by=request.user)
+    if request.method == 'POST':
+        new_name = request.POST.get('custom_name', '').strip()
+        url_obj.custom_name = new_name or None
+        url_obj.save()
+        return redirect('stats:url_detail', short_url=short_url)
+    return redirect('stats:url_detail', short_url=short_url)
+
 
 @login_required
 def urls_list(request):

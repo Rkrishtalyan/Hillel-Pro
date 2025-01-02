@@ -12,7 +12,7 @@ class URL(models.Model):
     short_url = models.URLField(max_length=8, unique=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    custom_name = models.CharField(max_length=50, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.short_url:
@@ -29,6 +29,3 @@ class URLClick(models.Model):
 
     def __str__(self):
         return f"{self.url} - {self.user} - {self.clicked_at}"
-
-
-

@@ -9,6 +9,7 @@
     <thead>
       <tr>
         <th>#</th>
+        <th>Name</th>
         <th>Original URL</th>
         <th>Short URL</th>
         <th>Clicks</th>
@@ -20,13 +21,27 @@
       {% for url in user_urls %}
       <tr>
         <td>{{ forloop.counter }}</td>
+        
+        <td>
+          {% if url.custom_name %}
+            {{ url.custom_name }}
+          {% else %}
+            <em>{{ url.short_url }}</em>
+          {% endif %}
+        </td>
+
         <td>
           <a href="{{ url.original_url }}" target="_blank">
             {{ url.original_url|truncatechars:50 }}
           </a>
         </td>
         <td>
-          {{ request.build_absolute_uri|cut:request.path }}{{ url.short_url }}
+          <a 
+            href="{{ request.build_absolute_uri|cut:request.path }}go/{{ url.short_url }}" 
+            target="_blank"
+          >
+            {{ request.build_absolute_uri|cut:request.path }}go/{{ url.short_url }}
+          </a>
         </td>
         <td>{{ url.clicks.count }}</td>
         <td>{{ url.created_at }}</td>
