@@ -1,15 +1,26 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import URLForm, RegistrationForm
-from .models import URL, URLClick
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
-from django.shortcuts import redirect
 from user_agents import parse
 from django.contrib.gis.geoip2 import GeoIP2
+
+from shortener.forms import URLForm, RegistrationForm
+from shortener.models import URL, URLClick
 
 
 @login_required(login_url='login')
 def home(request):
+    """
+    Handle the home view for creating shortened URLs.
+
+    This view processes a URL form submitted by the user, creates or retrieves
+    a shortened URL, and displays the result along with the click count.
+
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: Rendered template with the form and results (if applicable).
+    :rtype: HttpResponse
+    """
     if request.method == 'POST':
         form = URLForm(request.POST)
         if form.is_valid():
@@ -36,6 +47,18 @@ def home(request):
 
 
 def redirect_to_url(request, short_url):
+    """
+    Redirect to the original URL associated with the provided short URL.
+
+    This view logs the click details, including device type, country, and user.
+
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :param short_url: The short URL slug to resolve.
+    :type short_url: str
+    :return: A redirect response to the original URL.
+    :rtype: HttpResponseRedirect
+    """
     url = get_object_or_404(URL, short_url=short_url)
 
     user_agent = parse(request.META.get('HTTP_USER_AGENT', ''))
@@ -66,6 +89,14 @@ def redirect_to_url(request, short_url):
 
 
 def get_client_ip(request):
+    """
+    Retrieve the client's IP address from the request.
+
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: The client's IP address.
+    :rtype: str
+    """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         return x_forwarded_for.split(',')[0]
@@ -73,6 +104,17 @@ def get_client_ip(request):
 
 
 def register(request):
+    """
+    Handle user registration.
+
+    This view processes the registration form to create a new user account
+    and log them in upon successful registration.
+
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: Rendered template with the registration form.
+    :rtype: HttpResponse
+    """
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
@@ -85,5 +127,13 @@ def register(request):
 
 
 def logout_user(request):
+    """
+    Log out the current user and redirect to the home page.
+
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: A redirect response to the home page.
+    :rtype: HttpResponseRedirect
+    """
     logout(request)
     return redirect('home')
