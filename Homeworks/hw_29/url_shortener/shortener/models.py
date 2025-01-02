@@ -45,7 +45,10 @@ class URL(models.Model):
         :param kwargs: Keyword arguments for the save method.
         """
         if not self.short_url:
-            self.short_url = generate_short_url()
+            candidate = generate_short_url()
+            while URL.objects.filter(short_url=candidate).exists():
+                candidate = generate_short_url()
+            self.short_url = candidate
         super().save(*args, **kwargs)
 
 
