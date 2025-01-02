@@ -1,14 +1,35 @@
 {% extends 'shortener/base.html' %}
-{% block title %} Short URL {% endblock %}
+{% block title %}URL Shortener{% endblock %}
 {% block content %}
-<h1>Shortener URL:</h1>
-<form method="POST">
+<h1 class="mb-4">URL Shortener</h1>
+
+<form method="POST" class="mb-3">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit"> Short </button>
+    <div class="mb-3">
+      {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-primary">Shorten</button>
 </form>
+
 {% if short_url %}
-    <p>short_url: <a href="{{ short_url }}">{{ short_url }}</a></p>
-    <p>clicks: {{ clicks }}</p>
+  <div class="card p-3 mb-3">
+    <p>
+      <strong>Short URL:</strong>
+      <a href="{{ short_url }}">{{ short_url }}</a>
+    </p>
+    <p><strong>Clicks:</strong> {{ clicks }}</p>
+
+    <h5>QR Code:</h5>
+    <img
+      src="{% url 'qr_generator:generate_qr' short_url_slug %}"
+      alt="QR Code for {{ short_url }}"
+      style="width:150px; height:150px;"
+    />
+    <p class="mt-2">
+      <a href="{% url 'qr_generator:generate_qr' short_url_slug %}" download class="btn btn-outline-secondary">
+          Download QR Code
+      </a>
+    </p>
+  </div>
 {% endif %}
 {% endblock %}

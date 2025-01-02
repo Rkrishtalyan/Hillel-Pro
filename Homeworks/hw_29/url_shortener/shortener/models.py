@@ -24,6 +24,8 @@ class URLClick(models.Model):
     url = models.ForeignKey(URL, on_delete=models.CASCADE, related_name='clicks')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     clicked_at = models.DateTimeField(auto_now_add=True)
+    device_type = models.CharField(max_length=50, default='Unknown')
+    country = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f"{self.url} - {self.user} - {self.clicked_at}"

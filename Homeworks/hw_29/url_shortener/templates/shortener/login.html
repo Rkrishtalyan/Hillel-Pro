@@ -2,24 +2,24 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <h1>Login</h1>
+<h1 class="mb-4">Login</h1>
 
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+<form method="POST" class="mb-3">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-success">Login</button>
+</form>
 
-  {% if form.errors %}
-    <p style="color: red;">
-      Incorrect username or password.
-    </p>
-  {% endif %}
+{% if form.errors %}
+  <div class="alert alert-danger" role="alert">
+    Incorrect username or password.
+  </div>
+{% endif %}
 
-  <p>
-    Don’t have an account yet?
-    <a href="{% url 'register' %}">
-      Sign up!
-    </a>
-  </p>
+<p>
+  Don’t have an account yet?
+  <a href="{% url 'register' %}">
+    Sign up!
+  </a>
+</p>
 {% endblock %}

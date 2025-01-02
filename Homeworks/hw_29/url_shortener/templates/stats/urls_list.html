@@ -1,0 +1,48 @@
+{% extends "shortener/base.html" %}
+{% block title %}My URLs{% endblock %}
+{% block content %}
+
+<h1 class="mb-4">All Your Shortened URLs</h1>
+
+{% if user_urls %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Original URL</th>
+        <th>Short URL</th>
+        <th>Clicks</th>
+        <th>Created At</th>
+        <th>View Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for url in user_urls %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <a href="{{ url.original_url }}" target="_blank">
+            {{ url.original_url|truncatechars:50 }}
+          </a>
+        </td>
+        <td>
+          {{ request.build_absolute_uri|cut:request.path }}{{ url.short_url }}
+        </td>
+        <td>{{ url.clicks.count }}</td>
+        <td>{{ url.created_at }}</td>
+        <td>
+          <a href="{% url 'stats:url_detail' url.short_url %}" class="btn btn-sm btn-outline-primary">
+            View
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>You have no shortened URLs yet.</p>
+{% endif %}
+
+<a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
+
+{% endblock %}

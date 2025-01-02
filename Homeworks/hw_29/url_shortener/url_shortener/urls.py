@@ -20,4 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('shortener.urls')),
+    path('qr/', include('qr_generator.urls', namespace='qr_generator')),
+    path('stats/', include('stats.urls', namespace='stats')),
 ]

@@ -1,0 +1,114 @@
+{% extends "shortener/base.html" %}
+{% block title %}URL Details{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+  <a href="{% url 'stats:urls_list' %}" class="me-2 text-decoration-none">
+    ←
+  </a>
+  Details for {{ url_obj.short_url }}
+</h1>
+
+<div class="mb-3">
+  <strong>Original URL:</strong>
+  <a href="{{ url_obj.original_url }}" target="_blank">
+    {{ url_obj.original_url|truncatechars:60 }}
+  </a>
+</div>
+
+<div class="mb-3">
+  <strong>Short URL:</strong>
+  <a href="{{ full_short_url }}" target="_blank">
+    {{ full_short_url }}
+  </a>
+</div>
+
+<div class="mb-3">
+  <strong>Total Clicks ({{ selected_period }}):</strong> {{ clicks_count }}
+</div>
+
+<hr class="my-4">
+
+<h4>QR Code</h4>
+<img
+  src="{% url 'qr_generator:generate_qr' url_obj.short_url %}"
+  alt="QR code for {{ url_obj.short_url }}"
+  style="width:150px; height:150px;"
+/>
+<p class="mt-2">
+  <a href="{% url 'qr_generator:generate_qr' url_obj.short_url %}" download class="btn btn-outline-secondary">
+    Download QR
+  </a>
+</p>
+
+<hr class="my-4">
+
+<form method="GET" class="row g-3 align-items-center mb-4">
+  <div class="col-auto">
+    <label for="period" class="col-form-label">Date range:</label>
+  </div>
+  <div class="col-auto">
+    <select name="period" id="period" class="form-select">
+      <option value="all" {% if selected_period == 'all' %}selected{% endif %}>All time</option>
+      <option value="hour" {% if selected_period == 'hour' %}selected{% endif %}>Last hour</option>
+      <option value="day" {% if selected_period == 'day' %}selected{% endif %}>Last 24 hours</option>
+      <option value="month" {% if selected_period == 'month' %}selected{% endif %}>Last 30 days</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </div>
+</form>
+
+<h4>Device Statistics</h4>
+{% if device_stats %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Device</th>
+        <th>Clicks</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in device_stats %}
+      <tr>
+        <td>{{ item.device_type }}</td>
+        <td>{{ item.num_clicks }}</td>
+        <td>{{ item.percentage|floatformat:2 }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No device data for this time period.</p>
+{% endif %}
+
+<hr class="my-4">
+
+<h4>Country Statistics</h4>
+{% if country_stats %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Country</th>
+        <th>Clicks</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in country_stats %}
+      <tr>
+        <td>{{ item.country }}</td>
+        <td>{{ item.num_clicks }}</td>
+        <td>{{ item.percentage|floatformat:2 }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No country data for this time period.</p>
+{% endif %}
+
+<a href="{% url 'home' %}" class="btn btn-secondary mt-4">Back to Home</a>
+{% endblock %}
