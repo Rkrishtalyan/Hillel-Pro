@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load i18n %}
+
+{% block content %}
+<h1>{{ pet.name }}</h1>
+
+{% if pet.avatar %}
+  <img src="{{ pet.avatar.url }}" alt="Avatar of {{ pet.name }}" width="200" class="img-thumbnail mb-3">
+{% endif %}
+
+<p><strong>{% trans "Species" %}:</strong> {{ pet.species }}</p>
+<p><strong>{% trans "Breed" %}:</strong> {{ pet.breed }}</p>
+<p><strong>{% trans "Birth Date" %}:</strong> {{ pet.birth_date }}</p>
+<p><strong>{% trans "Chip Number" %}:</strong> {{ pet.chip_number }}</p>
+<p><strong>{% trans "Notes" %}:</strong> {{ pet.notes }}</p>
+<p><strong>{% trans "Confirmed Diagnoses" %}:</strong> {{ pet.confirmed_diagnoses }}</p>
+<p><strong>{% trans "Current Prescriptions" %}:</strong> {{ pet.current_prescriptions }}</p>
+
+<hr>
+<h3>{% trans "Weight Log" %}</h3>
+<form method="POST" class="mb-3">
+  {% csrf_token %}
+  {{ weight_form|crispy }}
+  <button type="submit" name="weight_submit" class="btn btn-success">{% trans "Add weight" %}</button>
+</form>
+<ul class="list-group">
+  {% for wl in weight_logs %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>{{ wl.date }} – {{ wl.weight_kg }} kg</span>
+    </li>
+  {% endfor %}
+</ul>
+
+<hr>
+<h3>{% trans "Photo Gallery" %}</h3>
+<form method="POST" enctype="multipart/form-data" class="mb-3">
+  {% csrf_token %}
+  {{ photo_form|crispy }}
+  <button type="submit" name="photo_submit" class="btn btn-primary">{% trans "Upload photo" %}</button>
+</form>
+<div class="row">
+  {% for photo in photos %}
+    <div class="col-auto">
+      <img src="{{ photo.image.url }}" alt="Photo of {{ pet.name }}" width="150" class="img-thumbnail m-1">
+    </div>
+  {% endfor %}
+</div>
+
+<hr>
+<h3>{% trans "Vaccination Log" %}</h3>
+<form method="POST" class="mb-3">
+  {% csrf_token %}
+  {{ vaccine_form|crispy }}
+  <button type="submit" name="vaccine_submit" class="btn btn-warning">{% trans "Add vaccination" %}</button>
+</form>
+
+<table class="table table-bordered">
+  <tr>
+    <th>{% trans "Date Administered" %}</th>
+    <th>{% trans "Vaccine Name" %}</th>
+    <th>{% trans "Next Due Date" %}</th>
+    <th>{% trans "Notes" %}</th>
+  </tr>
+  {% for vac in vaccinations %}
+  <tr>
+    <td>{{ vac.date_administered }}</td>
+    <td>{{ vac.vaccine_name }}</td>
+    <td>{{ vac.next_due_date|default:"-" }}</td>
+    <td>{{ vac.notes }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<hr>
+<h3>{% trans "Pet Documents" %}</h3>
+<form method="POST" enctype="multipart/form-data" class="mb-3">
+  {% csrf_token %}
+  {{ document_form|crispy }}
+  <button type="submit" name="document_submit" class="btn btn-info">{% trans "Add Document" %}</button>
+</form>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>{% trans "Document Date" %}</th>
+      <th>{% trans "Type" %}</th>
+      <th>{% trans "Description" %}</th>
+      <th>{% trans "File" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in documents %}
+    <tr>
+      <td>{{ doc.doc_date }}</td>
+      <td>{{ doc.get_doc_type_display }}</td>
+      <td>{{ doc.description }}</td>
+      <td>
+        <a href="{{ doc.doc_file.url }}" target="_blank">
+          {% trans "Download" %}
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr>
+<h3>{% trans "Tasks" %}</h3>
+<ul class="list-group">
+  {% for task in tasks %}
+    <li class="list-group-item">
+      <strong>{{ task.title }}</strong>
+      {% if task.due_date %} – {% trans "due" %} {{ task.due_date }}{% endif %}
+      {% if task.done %} ({% trans "done" %}){% else %} ({% trans "not done" %}){% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<hr>
+<div class="mt-3">
+  <a href="{% url 'pets:pet_update' pet.id %}" class="btn btn-secondary">{% trans "Edit" %}</a>
+  <a href="{% url 'pets:pet_delete' pet.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
+  <a href="{% url 'pets:pet_list' %}" class="btn btn-outline-primary">{% trans "Back to list" %}</a>
+</div>
+{% endblock %}

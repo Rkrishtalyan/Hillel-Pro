@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">{% trans "Delete pet" %}</h2>
+    <p class="card-text">
+      {% blocktrans with name=pet.name %}
+        Are you sure you want to delete "{{ name }}"?
+      {% endblocktrans %}
+    </p>
+
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">{% trans "Yes, delete" %}</button>
+      <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

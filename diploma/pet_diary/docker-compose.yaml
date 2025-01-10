@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: petdiary_web_sqlite
+    command: >
+      bash -c "
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+  bot:
+    build: .
+    command: python manage.py bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=123456:ABC...
+    depends_on:
+      - web
