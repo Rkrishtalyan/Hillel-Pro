@@ -8,14 +8,22 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
         'id', 'email', 'first_name', 'last_name',
-        'phone_number', 'is_staff', 'is_superuser'
+        'phone_number', 'telegram_id', 'communication_method',
+        'preferred_language', 'preferred_timezone', 'is_staff', 'is_superuser'
     )
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {
-            'fields': ('first_name', 'last_name', 'phone_number',)
+            'fields': (
+                'first_name', 'last_name', 'phone_number',
+                'avatar',
+                'telegram_id',
+                'communication_method',
+                'preferred_language',
+                'preferred_timezone'
+            )
         }),
         ('Permissions', {
             'fields': (
@@ -30,7 +38,12 @@ class CustomUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': (
                 'email', 'first_name', 'last_name',
-                'phone_number', 'password1', 'password2',
+                'phone_number', 'avatar',
+                'telegram_id',
+                'communication_method',
+                'preferred_language',
+                'preferred_timezone',
+                'password1', 'password2',
                 'is_staff', 'is_superuser'
             )}
          ),

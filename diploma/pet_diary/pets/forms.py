@@ -10,7 +10,20 @@ from pets.models import (
 )
 
 
+DATE_WIDGET = forms.DateInput(attrs={'type': 'date'})
+TIME_WIDGET = forms.TimeInput(attrs={'type': 'time'})
+
+
+# -------------------------------
+#           PetForm
+# -------------------------------
 class PetForm(forms.ModelForm):
+    birth_date = forms.DateField(
+        required=False,
+        widget=DATE_WIDGET,
+        label=_("Birth Date")
+    )
+
     class Meta:
         model = Pet
         fields = [
@@ -27,7 +40,6 @@ class PetForm(forms.ModelForm):
         labels = {
             'name': _("Pet Name"),
             'species': _("Species"),
-            'birth_date': _("Birth Date"),
             'breed': _("Breed"),
             'chip_number': _("Chip Number"),
             'avatar': _("Avatar"),
@@ -37,16 +49,26 @@ class PetForm(forms.ModelForm):
         }
 
 
+# -------------------------------
+#         WeightLogForm
+# -------------------------------
 class WeightLogForm(forms.ModelForm):
+    date = forms.DateField(
+        widget=DATE_WIDGET,
+        label=_("Date")
+    )
+
     class Meta:
         model = WeightLog
         fields = ['date', 'weight_kg']
         labels = {
-            'date': _("Date"),
             'weight_kg': _("Weight (kg)"),
         }
 
 
+# -------------------------------
+#       PetImageForm
+# -------------------------------
 class PetImageForm(forms.ModelForm):
     class Meta:
         model = PetImage
@@ -56,7 +78,21 @@ class PetImageForm(forms.ModelForm):
         }
 
 
+# -------------------------------
+#    VaccinationLogForm
+# -------------------------------
 class VaccinationLogForm(forms.ModelForm):
+    date_administered = forms.DateField(
+        widget=DATE_WIDGET,
+        label=_("Date Administered"),
+        required=True
+    )
+    next_due_date = forms.DateField(
+        widget=DATE_WIDGET,
+        label=_("Next Due Date"),
+        required=False
+    )
+
     class Meta:
         model = VaccinationLog
         fields = [
@@ -67,30 +103,92 @@ class VaccinationLogForm(forms.ModelForm):
         ]
         labels = {
             'vaccine_name': _("Vaccine Name"),
-            'date_administered': _("Date Administered"),
-            'next_due_date': _("Next Due Date"),
             'notes': _("Notes"),
         }
 
 
-class TaskForm(forms.ModelForm):
+# -------------------------------
+#        TaskCreateForm
+# -------------------------------
+class TaskCreateForm(forms.ModelForm):
+    due_date = forms.DateField(
+        widget=DATE_WIDGET,
+        required=False,
+        label=_("Due Date")
+    )
+    due_time = forms.TimeField(
+        widget=TIME_WIDGET,
+        required=False,
+        label=_("Due Time")
+    )
+
     class Meta:
         model = Task
-        fields = ['title', 'due_date', 'done']
+        fields = [
+            'title',
+            'due_date',
+            'due_time',
+            'remind_me',
+            'remind_before',
+            'status',
+            'recurring',
+            'recurring_days',
+        ]
         labels = {
-            'title': _("Title"),
-            'due_date': _("Due Date"),
-            'done': _("Done"),
+            'title':          _("Title"),
+            'due_date':       _("Due Date"),
+            'due_time':       _("Due Time"),
+            'remind_me':      _("Remind Me"),
+            'remind_before':  _("Remind Before"),
+            'status':         _("Status"),
+            'recurring':      _("Recurring?"),
+            'recurring_days': _("Number of days to repeat"),
         }
 
 
+# -------------------------------
+#        TaskEditForm
+# -------------------------------
+class TaskEditForm(forms.ModelForm):
+    due_date = forms.DateField(
+        widget=DATE_WIDGET,
+        required=False,
+        label=_("Due Date")
+    )
+    due_time = forms.TimeField(
+        widget=TIME_WIDGET,
+        required=False,
+        label=_("Due Time")
+    )
+
+    class Meta:
+        model = Task
+        # Excluding recurring and recurring_days
+        exclude = ['recurring', 'recurring_days', 'pet', 'created_at', 'updated_at']
+        labels = {
+            'title':         _("Title"),
+            'due_date':      _("Due Date"),
+            'due_time':      _("Due Time"),
+            'remind_me':     _("Remind Me"),
+            'remind_before': _("Remind Before"),
+            'status':        _("Status"),
+        }
+
+
+# -------------------------------
+#     PetDocumentForm
+# -------------------------------
 class PetDocumentForm(forms.ModelForm):
+    doc_date = forms.DateField(
+        widget=DATE_WIDGET,
+        label=_("Document Date")
+    )
+
     class Meta:
         model = PetDocument
         fields = ['doc_file', 'doc_type', 'doc_date', 'description']
         labels = {
             'doc_file': _("Document File"),
             'doc_type': _("Document Type"),
-            'doc_date': _("Document Date"),
             'description': _("Description"),
         }

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">{{ title }}</h2>
+  </div>
+  <div class="card-body">
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      {{ form|crispy }}
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">
+          {% trans "Save" %}
+        </button>
+        <a href="{% url 'pets:pet_detail' pet.id %}?tab=tasks" class="btn btn-secondary">
+          {% trans "Cancel" %}
+        </a>
+
+        <!-- Showing "Delete" button if editing existing task -->
+        {% if task %}
+          <a 
+            href="{% url 'pets:task_delete' task.id %}" 
+            class="btn btn-danger float-end"
+          >
+            {% trans "Delete" %}
+          </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const remindMeCheckbox = document.getElementById('id_remind_me');
+    const remindBeforeFormGroup = document.querySelector('.form-group.field-remind_before');
+    if (remindMeCheckbox && remindBeforeFormGroup) {
+      function toggleRemindBefore() {
+        if (remindMeCheckbox.checked) {
+          remindBeforeFormGroup.style.display = 'block';
+        } else {
+          remindBeforeFormGroup.style.display = 'none';
+          const remindBeforeSelect = document.getElementById('id_remind_before');
+          if (remindBeforeSelect) {
+            remindBeforeSelect.selectedIndex = 0;
+          }
+        }
+      }
+      toggleRemindBefore();
+      remindMeCheckbox.addEventListener('change', toggleRemindBefore);
+    }
+  });
+</script>
+{% endblock %}

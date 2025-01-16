@@ -7,7 +7,7 @@ from pets.models import (
 
 class PetDocumentInline(admin.TabularInline):
     model = PetDocument
-    extra = 0  # Чтобы лишних пустых форм не было
+    extra = 0
     fields = ('doc_type', 'doc_file', 'doc_date', 'description', 'created_at')
     readonly_fields = ('created_at',)
     ordering = ('-doc_date', '-created_at')
@@ -40,14 +40,6 @@ class VaccinationLogAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pet', 'title', 'due_date', 'done')
-    list_filter = ('pet', 'due_date', 'done')
+    list_display = ('id', 'pet', 'title', 'due_date', 'due_time', 'status')
+    list_filter = ('pet', 'due_date', 'status')
     search_fields = ('title', 'pet__name')
-
-
-@admin.register(PetDocument)
-class PetDocumentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pet', 'doc_type', 'doc_date', 'created_at')
-    list_filter = ('doc_type', 'doc_date', 'pet')
-    search_fields = ('pet__name', 'description')
-    ordering = ('-doc_date', '-created_at')

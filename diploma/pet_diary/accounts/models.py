@@ -1,8 +1,18 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from accounts.managers import CustomUserManager
+
+
+class CommunicationMethod(models.TextChoices):
+    EMAIL = 'email', _("Email")
+    TELEGRAM = 'telegram', _("Telegram")
+
+LANGUAGE_CHOICES = [
+    ('en', 'English'),
+    ('ru', 'Russian'),
+    ('ua', 'Ukrainian'),
+]
 
 
 class CustomUser(AbstractUser):
@@ -19,7 +29,6 @@ class CustomUser(AbstractUser):
         max_length=150,
         blank=True
     )
-
     phone_number = models.CharField(
         max_length=20,
         blank=True,
@@ -31,7 +40,29 @@ class CustomUser(AbstractUser):
         blank=True,
         verbose_name=_("Telegram ID")
     )
-
+    avatar = models.ImageField(
+        upload_to='user_avatars/',
+        null=True,
+        blank=True,
+        verbose_name=_("User Avatar")
+    )
+    communication_method = models.CharField(
+        max_length=20,
+        choices=CommunicationMethod.choices,
+        default=CommunicationMethod.EMAIL,
+        verbose_name=_("Preferred Communication Method")
+    )
+    preferred_language = models.CharField(
+        max_length=2,
+        choices=LANGUAGE_CHOICES,
+        default='uk',
+        verbose_name=_("Preferred Language")
+    )
+    preferred_timezone = models.CharField(
+        max_length=50,
+        default='UTC',
+        verbose_name=_("Preferred Timezone")
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -14,8 +14,11 @@
       {{ form|crispy }}
 
       <div class="mt-3">
-        <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
-        <a href="{% if pet %}{% url 'pets:pet_detail' pet.id %}{% else %}{% url 'pets:pet_list' %}{% endif %}" class="btn btn-secondary">
+        <button type="submit" class="btn btn-primary">
+          {% trans "Save" %}
+        </button>
+        <!-- Redirect to documents -->
+        <a href="{% url 'pets:pet_detail' pet.id %}?tab=documents" class="btn btn-secondary">
           {% trans "Cancel" %}
         </a>
       </div>

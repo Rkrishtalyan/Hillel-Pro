@@ -21,7 +21,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
 application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-dp = application.dispatcher
+dp = application #.dispatcher
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
