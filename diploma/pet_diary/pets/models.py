@@ -197,15 +197,10 @@ class Task(models.Model):
         max_length=200,
         verbose_name=_("Title")
     )
-    due_date = models.DateField(
+    due_datetime = models.DateTimeField(
         null=True,
         blank=True,
-        verbose_name=_("Due Date")
-    )
-    due_time = models.TimeField(
-        null=True,
-        blank=True,
-        verbose_name=_("Due Time")
+        verbose_name=_("Due Date and Time")
     )
     remind_me = models.BooleanField(
         default=False,
@@ -242,6 +237,8 @@ class Task(models.Model):
         default=0,
         verbose_name=_("Number of days to repeat")
     )
+
+    reminder_sent = models.BooleanField(default=False, verbose_name=_("Reminder Sent"))
 
     def __str__(self):
         return f"{self.title} (pet={self.pet.name}, status={self.status})"

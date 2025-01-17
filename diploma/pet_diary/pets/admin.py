@@ -40,6 +40,6 @@ class VaccinationLogAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pet', 'title', 'due_date', 'due_time', 'status')
-    list_filter = ('pet', 'due_date', 'status')
+    list_display = ('id', 'pet', 'title', 'due_datetime', 'status')
+    list_filter = ('pet', 'due_datetime', 'status')
     search_fields = ('title', 'pet__name')

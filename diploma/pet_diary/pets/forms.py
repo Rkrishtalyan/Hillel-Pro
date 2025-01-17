@@ -111,23 +111,17 @@ class VaccinationLogForm(forms.ModelForm):
 #        TaskCreateForm
 # -------------------------------
 class TaskCreateForm(forms.ModelForm):
-    due_date = forms.DateField(
-        widget=DATE_WIDGET,
+    due_datetime = forms.DateTimeField(
         required=False,
-        label=_("Due Date")
-    )
-    due_time = forms.TimeField(
-        widget=TIME_WIDGET,
-        required=False,
-        label=_("Due Time")
+        label=_("Due DateTime"),
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
     )
 
     class Meta:
         model = Task
         fields = [
             'title',
-            'due_date',
-            'due_time',
+            'due_datetime',
             'remind_me',
             'remind_before',
             'status',
@@ -136,8 +130,7 @@ class TaskCreateForm(forms.ModelForm):
         ]
         labels = {
             'title':          _("Title"),
-            'due_date':       _("Due Date"),
-            'due_time':       _("Due Time"),
+            'due_datetime':   _("Due Date/Time"),
             'remind_me':      _("Remind Me"),
             'remind_before':  _("Remind Before"),
             'status':         _("Status"),
@@ -150,15 +143,10 @@ class TaskCreateForm(forms.ModelForm):
 #        TaskEditForm
 # -------------------------------
 class TaskEditForm(forms.ModelForm):
-    due_date = forms.DateField(
-        widget=DATE_WIDGET,
+    due_datetime = forms.DateTimeField(
         required=False,
-        label=_("Due Date")
-    )
-    due_time = forms.TimeField(
-        widget=TIME_WIDGET,
-        required=False,
-        label=_("Due Time")
+        label=_("Due DateTime"),
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
     )
 
     class Meta:
@@ -167,8 +155,7 @@ class TaskEditForm(forms.ModelForm):
         exclude = ['recurring', 'recurring_days', 'pet', 'created_at', 'updated_at']
         labels = {
             'title':         _("Title"),
-            'due_date':      _("Due Date"),
-            'due_time':      _("Due Time"),
+            'due_datetime':  _("Due Date/Time"),
             'remind_me':     _("Remind Me"),
             'remind_before': _("Remind Before"),
             'status':        _("Status"),

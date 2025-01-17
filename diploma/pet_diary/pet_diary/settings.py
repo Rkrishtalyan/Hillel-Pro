@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.UserLocaleTimeZoneMiddleware',
 ]
 
 ROOT_URLCONF = 'pet_diary.urls'
@@ -132,16 +133,16 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGES = [
     ('en', _('English')),
     ('ru', _('Russian')),
-    ('uk', _('Ukrainian')),
+    ('ua', _('Ukrainian')),
 ]
 
 LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
+USE_TZ = True
 
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -171,7 +172,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SESSION_SAVE_EVERY_REQUEST = True
 
 LOGIN_REDIRECT_URL = '/pets/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = ''
 
 X_FRAME_OPTIONS = 'DENY'
 
@@ -182,3 +183,13 @@ if not DEBUG:
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap5",)
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CELERY_BEAT_SCHEDULE = {
+    'check-tasks-every-10-secs': {
+        'task': 'pets.tasks.check_tasks_for_reminders',
+        'schedule': 10.0,
+    },
+}

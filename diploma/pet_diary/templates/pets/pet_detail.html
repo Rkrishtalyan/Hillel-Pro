@@ -133,7 +133,7 @@
                   <tr>
                     <th style="width: 40px;"></th>
                     <th>{% trans "Title" %}</th>
-                    <th>{% trans "Due Date" %}</th>
+                    <th>{% trans "Due Date/Time" %}</th>
                     <th>{% trans "Status" %}</th>
                     <th style="width: 160px;">{% trans "Actions" %}</th>
                   </tr>
@@ -148,8 +148,7 @@
                       </td>
                       <td>{{ task.title }}</td>
                       <td>
-                        {% if task.due_date %}{{ task.due_date }}{% endif %}
-                        {% if task.due_time %} {{ task.due_time }}{% endif %}
+                        {% if task.due_datetime %}{{ task.due_datetime }}{% endif %}
                       </td>
                       <td>
                         {% if task.status == 'planned' %}

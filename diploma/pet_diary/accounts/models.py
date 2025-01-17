@@ -55,7 +55,7 @@ class CustomUser(AbstractUser):
     preferred_language = models.CharField(
         max_length=2,
         choices=LANGUAGE_CHOICES,
-        default='uk',
+        default='ua',
         verbose_name=_("Preferred Language")
     )
     preferred_timezone = models.CharField(

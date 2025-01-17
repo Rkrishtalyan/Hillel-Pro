@@ -17,16 +17,19 @@
         <button type="submit" class="btn btn-primary">
           {% trans "Save" %}
         </button>
-        <a href="{% url 'pets:pet_detail' pet.id %}?tab=tasks" class="btn btn-secondary">
-          {% trans "Cancel" %}
-        </a>
 
-        <!-- Showing "Delete" button if editing existing task -->
+        {% if next_url %}
+          <a href="{{ next_url }}" class="btn btn-secondary">
+            {% trans "Cancel" %}
+          </a>
+        {% else %}
+          <a href="{% url 'pets:pet_detail' pet.id %}?tab=tasks" class="btn btn-secondary">
+            {% trans "Cancel" %}
+          </a>
+        {% endif %}
+
         {% if task %}
-          <a 
-            href="{% url 'pets:task_delete' task.id %}" 
-            class="btn btn-danger float-end"
-          >
+          <a href="{% url 'pets:task_delete' task.id %}" class="btn btn-danger float-end">
             {% trans "Delete" %}
           </a>
         {% endif %}

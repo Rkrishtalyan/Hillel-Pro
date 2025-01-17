@@ -79,7 +79,7 @@ def pet_detail(request, pet_id):
             )
 
     # Pagination
-    tasks_qs = tasks_qs.order_by('due_date', 'due_time', 'id')
+    tasks_qs = tasks_qs.order_by('due_datetime', 'id')
     paginator = Paginator(tasks_qs, int(per_page))
     page_number = request.GET.get('page', '1')
     page_obj = paginator.get_page(page_number)
@@ -155,6 +155,7 @@ def pet_delete(request, pet_id):
 @login_required
 def task_create(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
+
     if request.method == 'POST':
         form = TaskCreateForm(request.POST)
         if form.is_valid():
@@ -162,15 +163,17 @@ def task_create(request, pet_id):
             original_task.pet = pet
             original_task.save()
 
-            # Creating copies for recurring tasks
-            if original_task.recurring and original_task.recurring_days > 0 and original_task.due_date:
+            if (
+                original_task.recurring
+                and original_task.recurring_days > 0
+                and original_task.due_datetime
+            ):
                 for i in range(1, original_task.recurring_days + 1):
-                    new_date = original_task.due_date + timedelta(days=i)
+                    new_dt = original_task.due_datetime + timedelta(days=i)
                     Task.objects.create(
                         pet=pet,
                         title=original_task.title,
-                        due_date=new_date,
-                        due_time=original_task.due_time,
+                        due_datetime=new_dt,
                         remind_me=original_task.remind_me,
                         remind_before=original_task.remind_before,
                         status=original_task.status,
@@ -194,10 +197,14 @@ def task_create(request, pet_id):
 def task_edit(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     pet = task.pet
+    next_url = request.GET.get('next')
+
     if request.method == 'POST':
         form = TaskEditForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
+            if next_url:
+                return redirect(next_url)
             return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=tasks")
     else:
         form = TaskEditForm(instance=task)
@@ -207,6 +214,7 @@ def task_edit(request, task_id):
         'pet': pet,
         'task': task,
         'title': _("Edit Task"),
+        'next_url': next_url,
     })
 
 

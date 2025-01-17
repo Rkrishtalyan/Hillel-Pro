@@ -23,6 +23,32 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" 
+             data-bs-toggle="dropdown" aria-expanded="false">
+            {% trans "Language" %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" 
+                 href="{% url 'accounts:set_language' %}?lang=en&next={{ request.path }}">
+                English
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" 
+                 href="{% url 'accounts:set_language' %}?lang=ru&next={{ request.path }}">
+                Русский
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item"
+                 href="{% url 'accounts:set_language' %}?lang=ua&next={{ request.path }}">
+                Українська
+              </a>
+            </li>
+          </ul>
+        </li>
         {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'accounts:profile' %}">{% trans "Profile" %}</a>
@@ -54,6 +80,18 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
         crossorigin="anonymous"
 ></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (navigator.cookieEnabled) {
+      let userTz = "{{ user.preferred_timezone|default:'UTC' }}";
+      let browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (browserTz && browserTz !== userTz) {
+        fetch("{% url 'accounts:set_timezone' %}?tz=" + encodeURIComponent(browserTz))
+          .then(response => console.log("Timezone updated:", browserTz));
+      }
+    }
+  });
+</script>
 
 </body>
 </html>

@@ -1,9 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib.auth.views import LogoutView
 from django.urls import reverse
 from django.core.paginator import Paginator
+from django.utils import translation
 
 from accounts.forms import CustomUserCreationForm, UserProfileForm
 from pets.models import Task
@@ -51,7 +53,7 @@ def profile_view(request):
         return redirect(f"{reverse('accounts:profile')}?show_old={show_old}&per_page={per_page}")
 
     # Pagination
-    tasks_qs = tasks_qs.select_related('pet').order_by('due_date', 'due_time', 'id')
+    tasks_qs = tasks_qs.select_related('pet').order_by('due_datetime', 'id')
     paginator = Paginator(tasks_qs, int(per_page))
     page_number = request.GET.get('page', '1')
     page_obj = paginator.get_page(page_number)
@@ -83,3 +85,31 @@ def profile_edit_view(request):
 class POSTLogoutView(LogoutView):
     http_method_names = ['get', 'post', 'head', 'options']
     template_name = 'accounts/logout.html'
+
+
+def set_language_view(request):
+    lang = request.GET.get('lang')
+    next_url = request.GET.get('next', '/')
+
+    if lang in ['en','ru','ua']:
+        if request.user.is_authenticated:
+            request.user.preferred_language = lang
+            request.user.save()
+        else:
+            # Saving into session
+            request.session['language'] = lang
+        translation.activate(lang)
+        request.LANGUAGE_CODE = lang
+
+    return redirect(next_url)
+
+
+def set_timezone_view(request):
+    tz = request.GET.get('tz')
+    if tz:
+        if request.user.is_authenticated:
+            request.user.preferred_timezone = tz
+            request.user.save()
+        else:
+            request.session['timezone'] = tz
+    return HttpResponse("OK")

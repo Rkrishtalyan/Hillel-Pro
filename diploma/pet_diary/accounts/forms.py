@@ -41,8 +41,8 @@ class UserProfileForm(forms.ModelForm):
             'phone_number',
             'avatar',
             'communication_method',
-            'preferred_language',
-            'preferred_timezone',
+            # 'preferred_language',
+            # 'preferred_timezone',
         )
         labels = {
             'first_name': _("First Name"),

@@ -25,6 +25,8 @@
         <p><strong>{% trans "Last Name" %}:</strong> {{ user_obj.last_name|default:"-" }}</p>
         <p><strong>{% trans "Phone Number" %}:</strong> {{ user_obj.phone_number|default:"-" }}</p>
         <p><strong>{% trans "Preferred Communication Method" %}:</strong> {{ user_obj.communication_method|default:"email" }}</p>
+        <p><strong>{% trans "Time Zone" %}:</strong> {{ user_obj.preferred_timezone|default:"UTC" }}</p>
+        <p><strong>{% trans "Language" %}:</strong> {{ user_obj.preferred_language|default:"UTC" }}</p>
       </div>
     </div>
   </div>
@@ -74,7 +76,7 @@
             <th style="width:40px;"></th>
             <th>{% trans "Title" %}</th>
             <th>{% trans "Pet" %}</th>
-            <th>{% trans "Due Date" %}</th>
+            <th>{% trans "Due Date/Time" %}</th>
             <th>{% trans "Status" %}</th>
             <th style="width:120px;">{% trans "Actions" %}</th>
           </tr>
@@ -94,8 +96,7 @@
                 </a>
               </td>
               <td>
-                {% if task.due_date %}{{ task.due_date }}{% endif %}
-                {% if task.due_time %} {{ task.due_time }}{% endif %}
+                {% if task.due_datetime %}{{ task.due_datetime }}{% endif %}
               </td>
               <td>
                 {% if task.status == 'planned' %}
@@ -109,8 +110,8 @@
                 {% endif %}
               </td>
               <td>
-                <a href="{% url 'pets:task_edit' task.id %}" class="btn btn-sm btn-secondary">
-                  {% trans "Edit" %}
+                <a href="{% url 'pets:task_edit' task.id %}?next={{ request.path }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}" class="btn btn-sm btn-secondary">
+                    Edit
                 </a>
               </td>
             </tr>

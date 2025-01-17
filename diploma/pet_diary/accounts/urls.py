@@ -4,7 +4,9 @@ from accounts.views import (
     register_view,
     profile_view,
     POSTLogoutView,
-    profile_edit_view
+    profile_edit_view,
+    set_language_view,
+    set_timezone_view,
 )
 
 
@@ -16,4 +18,6 @@ urlpatterns = [
     path('logout/', POSTLogoutView.as_view(), name='logout'),
     path('profile/', profile_view, name='profile'),
     path('profile/edit/', profile_edit_view, name='profile_edit'),
+    path('set-language/', set_language_view, name='set_language'),
+    path('set-timezone/', set_timezone_view, name='set_timezone'),
 ]
