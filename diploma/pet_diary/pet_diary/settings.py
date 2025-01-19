@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import certifi
 from dotenv import load_dotenv
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
@@ -30,6 +31,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
+
+os.environ['SSL_CERT_FILE'] = certifi.where()
 
 
 # Application definition
@@ -193,3 +196,10 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 10.0,
     },
 }
+
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == 'True'
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")

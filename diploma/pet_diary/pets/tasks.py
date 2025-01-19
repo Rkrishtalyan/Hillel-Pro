@@ -28,16 +28,16 @@ def check_tasks_for_reminders():
         remind_me=True,
         status__in=['planned', 'overdue'],
         reminder_sent=False,
-        due_datetime__isnull=False
+        due_datetime__isnull=False,
+        deleted_at__isnull=True
     )
     for t in tasks_qs:
         offset = _parse_remind_before(t.remind_before)
         remind_moment_utc = t.due_datetime - offset
 
         if remind_moment_utc <= now_utc < t.due_datetime:
-            user = t.pet.owner
+            user = t.pet.caregiver if t.pet.caregiver else t.pet.owner
             _send_task_reminder(user, t)
-            t.reminder_sent = True
             t.save()
 
 
@@ -76,6 +76,7 @@ def _send_task_reminder(user: CustomUser, task: Task):
             text=msg_text,
             reply_markup=markup
         )
+        task.mark_as_reminded_via_telegram()
     else:
         from django.core.mail import send_mail
         send_mail(
@@ -84,3 +85,4 @@ def _send_task_reminder(user: CustomUser, task: Task):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
         )
+        task.mark_as_reminded_via_email()

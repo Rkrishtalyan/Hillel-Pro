@@ -12,6 +12,14 @@ class Pet(models.Model):
         related_name='pets',
         verbose_name=_("Owner")
     )
+    caregiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='caring_pets',
+        verbose_name=_("Caregiver")
+    )
+
     name = models.CharField(max_length=100, verbose_name=_("Pet Name"))
     species = models.CharField(max_length=100, verbose_name=_("Species"))
     birth_date = models.DateField(null=True, blank=True, verbose_name=_("Birth Date"))
@@ -219,16 +227,6 @@ class Task(models.Model):
         default=TaskStatus.PLANNED,
         verbose_name=_("Status")
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created at")
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_("Updated at")
-    )
-
-    # Recurring task field (for task creation only)
     recurring = models.BooleanField(
         default=False,
         verbose_name=_("Recurring?")
@@ -237,8 +235,100 @@ class Task(models.Model):
         default=0,
         verbose_name=_("Number of days to repeat")
     )
+    reminder_sent = models.BooleanField(
+        default=False,
+        verbose_name=_("Reminder Sent")
+    )
+    reminder_sent_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Reminder Sent at")
+    )
+    reminder_sent_with = models.CharField(
+        max_length=20,
+        blank=True,
+    )
 
-    reminder_sent = models.BooleanField(default=False, verbose_name=_("Reminder Sent"))
+    created_at = models.DateTimeField(auto_now_add=True,verbose_name=_("Created at"))
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=False,
+        on_delete=models.SET('User deleted'),
+        related_name='created_tasks',
+        verbose_name=_("Created by")
+    )
+
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated at"))
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='updated_tasks',
+        verbose_name=_("Updated By")
+    )
+
+    edited_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Edited at"))
+    edited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='edited_tasks',
+        verbose_name=_("Edited By")
+    )
+
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Deleted at"))
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='deleted_tasks',
+        verbose_name=_("Deleted By")
+    )
+
+    skipped_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Skipped at"))
+    skipped_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='skipped_tasks',
+        verbose_name=_("Skipped By")
+    )
+
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Completed at"))
+    completed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='completed_tasks',
+        verbose_name=_("Completed By")
+    )
+
+    def mark_as_edited(self, user):
+        self.edited_at = timezone.now()
+        self.edited_by = user
+
+    def mark_as_deleted(self, user):
+        self.deleted_at = timezone.now()
+        self.deleted_by = user
+
+    def mark_as_skipped(self, user):
+        self.status = self.TaskStatus.SKIPPED
+        self.skipped_at = timezone.now()
+        self.skipped_by = user
+
+    def mark_as_done(self, user):
+        self.status = self.TaskStatus.DONE
+        self.completed_at = timezone.now()
+        self.completed_by = user
+
+    def mark_as_reminded_via_email(self):
+        self.reminder_sent = True
+        self.reminder_sent_at = timezone.now()
+        self.reminder_sent_with = 'email'
+
+    def mark_as_reminded_via_telegram(self):
+        self.reminder_sent = True
+        self.reminder_sent_at = timezone.now()
+        self.reminder_sent_with = 'telegram'
 
     def __str__(self):
         return f"{self.title} (pet={self.pet.name}, status={self.status})"

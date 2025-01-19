@@ -13,10 +13,10 @@ class CustomUserCreationForm(UserCreationForm):
             'first_name',
             'last_name',
             'phone_number',
-            'avatar',
-            'communication_method',
-            'preferred_language',
-            'preferred_timezone',
+            # 'avatar',
+            # 'communication_method',
+            # 'preferred_language',
+            # 'preferred_timezone',
             'password1',
             'password2'
         )
@@ -25,10 +25,25 @@ class CustomUserCreationForm(UserCreationForm):
             'first_name': _("First Name"),
             'last_name': _("Last Name"),
             'phone_number': _("Phone Number"),
-            'avatar': _("User Avatar"),
-            'communication_method': _("Preferred Communication Method"),
-            'preferred_language': _("Preferred Language"),
-            'preferred_timezone': _("Preferred Timezone"),
+            'password1': _("Password"),
+            'password2': _("Password confirmation"),
+            # 'avatar': _("User Avatar"),
+            # 'communication_method': _("Notification Method"),
+            # 'preferred_language': _("Preferred Language"),
+            # 'preferred_timezone': _("Preferred Timezone"),
+        }
+        help_texts = {
+            'password1': _(
+                "Your password can’t be too similar to your other personal information. "
+                "Your password must contain at least 8 characters. "
+                "Your password can’t be a commonly used password. "
+                "Your password can’t be entirely numeric."
+            ),
+            'password2': _("Enter the same password as before, for verification."),
+        }
+        widgets = {
+            'password1': forms.PasswordInput(),
+            'password2': forms.PasswordInput(),
         }
 
 
@@ -49,7 +64,7 @@ class UserProfileForm(forms.ModelForm):
             'last_name': _("Last Name"),
             'phone_number': _("Phone Number"),
             'avatar': _("User Avatar"),
-            'communication_method': _("Preferred Communication Method"),
+            'communication_method': _("Notification Method"),
             'preferred_language': _("Preferred Language"),
             'preferred_timezone': _("Preferred Timezone"),
         }

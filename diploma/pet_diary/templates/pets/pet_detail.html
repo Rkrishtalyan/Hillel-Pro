@@ -5,13 +5,15 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
+    <a href="{% url 'pets:pet_list' %}" class="btn btn-outline-primary">
+      <i class="fas fa-arrow-left"></i> <span class="ms-2">{% trans "Back to list" %}</span>
+    </a>
     <h1 class="m-0">{{ pet.name }}</h1>
     {% if pet.species %}<small class="text-muted">{{ pet.species }}{% if pet.breed %}, {{ pet.breed }}{% endif %}</small>{% endif %}
   </div>
   <div>
     <a href="{% url 'pets:pet_update' pet.id %}" class="btn btn-secondary">{% trans "Edit" %}</a>
     <a href="{% url 'pets:pet_delete' pet.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
-    <a href="{% url 'pets:pet_list' %}" class="btn btn-outline-primary">{% trans "Back to list" %}</a>
   </div>
 </div>
 
@@ -19,13 +21,22 @@
   <div class="col-md-4 mb-3">
     {% if pet.avatar %}
       <img src="{{ pet.avatar.url }}" alt="Avatar of {{ pet.name }}" class="img-thumbnail w-100 mb-3">
+    {% else %}
+          <img src="{% static 'default_pet_avatar.png' %}" class="card-img-top" alt="No Avatar">
     {% endif %}
-
+    <p></p>
     <p><strong>{% trans "Birth Date" %}:</strong> {{ pet.birth_date|default:"-" }}</p>
     <p><strong>{% trans "Chip Number" %}:</strong> {{ pet.chip_number|default:"-" }}</p>
     <p><strong>{% trans "Notes" %}:</strong> {{ pet.notes|default:"-" }}</p>
     <p><strong>{% trans "Confirmed Diagnoses" %}:</strong> {{ pet.confirmed_diagnoses|default:"-" }}</p>
     <p><strong>{% trans "Current Prescriptions" %}:</strong> {{ pet.current_prescriptions|default:"-" }}</p>
+    <p><strong>{% trans "Caregiver" %}:</strong>
+      {% if pet.caregiver %}
+        {{ pet.caregiver.first_name }} {{ pet.caregiver.last_name }}
+      {% else %}
+        - 
+      {% endif %}
+    </p>
   </div>
 
   <div class="col-md-8">
@@ -124,7 +135,7 @@
             </div>
         
             <!-- MAss status update form -->
-            <form method="POST" action="?tab=tasks&show_old={{ show_old }}&per_page={{ per_page }}">
+            <form method="POST" action="{% url 'pets:task_bulk_status' pet.id %}?tab=tasks&show_old={{ show_old }}&per_page={{ per_page }}">
               {% csrf_token %}
               <input type="hidden" name="bulk_update" value="1">
         
@@ -165,12 +176,11 @@
                         <a href="{% url 'pets:task_edit' task.id %}" class="btn btn-sm btn-secondary">
                           {% trans "Edit" %}
                         </a>
-                        <a 
-                          href="{% url 'pets:task_delete' task.id %}" 
-                          class="btn btn-sm btn-danger ms-1"
-                        >
-                          {% trans "Delete" %}
-                        </a>
+                        {% if request.user == pet.owner %}
+                          <a href="{% url 'pets:task_delete' task.id %}" class="btn btn-sm btn-danger ms-1">
+                            {% trans "Delete" %}
+                          </a>
+                        {% endif %}
                       </td>
                     </tr>
                   {% endfor %}
@@ -286,11 +296,19 @@
               <div class="col">
                 <div class="card">
                   <div style="height: 200px; overflow: hidden;">
-                    <img 
-                      src="{{ photo.image.url }}" 
-                      alt="Photo of {{ pet.name }}"
-                      style="object-fit: cover; width:100%; height:100%;"
-                    >
+                    {% if pet.owner == request.user or pet.caregiver == request.user %}
+                      <a href="{{ photo.image.url }}" target="_blank">
+                        <img 
+                          src="{{ photo.image.url }}" 
+                          alt="Photo of {{ pet.name }}"
+                          style="object-fit: scale-down; width: 100%; height: 100%;">
+                      </a>
+                    {% else %}
+                      <img 
+                        src="{{ photo.image.url }}" 
+                        alt="Photo of {{ pet.name }}"
+                        style="object-fit: scale-down; width: 100%; height: 100%;">
+                    {% endif %}
                   </div>
                 </div>
               </div>

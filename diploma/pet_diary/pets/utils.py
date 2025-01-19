@@ -9,6 +9,7 @@ _telegram_bot = None
 async def _bot_send_message(bot: Bot, chat_id: int, text: str):
     await bot.send_message(chat_id=chat_id, text=text)
 
+
 def send_telegram_message(user, text):
     if not user.telegram_id:
         return

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load i18n %}
 {% block content %}
 
@@ -17,16 +18,17 @@
       <div class="col-md-4">
         {% if user_obj.avatar %}
           <img src="{{ user_obj.avatar.url }}" alt="Avatar" class="img-thumbnail mb-3">
+        {% else %}
+          <img src="{% static 'default_user_avatar.png' %}" class="card-img-top" alt="No Avatar">
         {% endif %}
       </div>
       <div class="col-md-8">
-        <p><strong>{% trans "Email" %}:</strong> {{ user_obj.email }}</p>
         <p><strong>{% trans "First Name" %}:</strong> {{ user_obj.first_name|default:"-" }}</p>
         <p><strong>{% trans "Last Name" %}:</strong> {{ user_obj.last_name|default:"-" }}</p>
+        <p><strong>{% trans "Email" %}:</strong> {{ user_obj.email }}</p>
         <p><strong>{% trans "Phone Number" %}:</strong> {{ user_obj.phone_number|default:"-" }}</p>
-        <p><strong>{% trans "Preferred Communication Method" %}:</strong> {{ user_obj.communication_method|default:"email" }}</p>
+        <p><strong>{% trans "Notification Method" %}:</strong> {{ user_obj.communication_method|default:"Email" }}</p>
         <p><strong>{% trans "Time Zone" %}:</strong> {{ user_obj.preferred_timezone|default:"UTC" }}</p>
-        <p><strong>{% trans "Language" %}:</strong> {{ user_obj.preferred_language|default:"UTC" }}</p>
       </div>
     </div>
   </div>

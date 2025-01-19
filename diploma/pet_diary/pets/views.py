@@ -1,9 +1,19 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
 from django.core.paginator import Paginator
+from django.db import models
+from django.http import HttpResponseForbidden
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+
+from pets.notifications import _notify_owner_about_result
+from pets.utils import send_telegram_message
+
 
 from pets.models import (
     Pet,
@@ -31,7 +41,10 @@ from pets.forms import (
 @login_required
 def pet_list(request):
     view_mode = request.GET.get('view', 'list')
-    pets = Pet.objects.all().order_by('name')
+    pets = Pet.objects.filter(
+        models.Q(owner=request.user) | models.Q(caregiver=request.user)
+    ).order_by('name')
+
     return render(request, 'pets/pet_list.html', {
         'pets': pets,
         'view_mode': view_mode,
@@ -57,26 +70,11 @@ def pet_detail(request, pet_id):
         per_page = '10'
 
     # Base queryset
-    tasks_qs = pet.tasks.all()
+    tasks_qs = pet.tasks.filter(deleted_at__isnull=True)
 
     # Hiding old tasks (done/skipped)
     if show_old != '1':
         tasks_qs = tasks_qs.filter(status__in=['planned', 'overdue'])
-
-    # Mass status update
-    if request.method == 'POST' and active_tab == 'tasks':
-        if 'bulk_update' in request.POST:
-            action = request.POST.get('action')  # 'done' or 'skipped'
-            task_ids = request.POST.getlist('task_ids')
-            if task_ids and action in ['done', 'skipped']:
-                from pets.models import Task
-                new_status = Task.TaskStatus.DONE if action == 'done' else Task.TaskStatus.SKIPPED
-                Task.objects.filter(id__in=task_ids, pet=pet).update(status=new_status)
-            # Redirect with saved params
-            return redirect(
-                f"{reverse('pets:pet_detail', args=[pet_id])}"
-                + f"?tab=tasks&show_old={show_old}&per_page={per_page}"
-            )
 
     # Pagination
     tasks_qs = tasks_qs.order_by('due_datetime', 'id')
@@ -127,10 +125,15 @@ def pet_update(request, pet_id):
     if request.method == 'POST':
         form = PetForm(request.POST, request.FILES, instance=pet)
         if form.is_valid():
-            form.save()
-            return redirect('pets:pet_detail', pet_id=pet.id)
+            try:
+                form.save()
+                return redirect('pets:pet_detail', pet_id=pet.id)
+            except ValidationError as e:
+                form.add_error('caregiver_email', e)
     else:
-        form = PetForm(instance=pet)
+        form = PetForm(instance=pet, initial={
+            'caregiver_email': pet.caregiver.email if pet.caregiver else ''
+        })
 
     return render(request, 'pets/pet_form.html', {
         'form': form,
@@ -161,6 +164,7 @@ def task_create(request, pet_id):
         if form.is_valid():
             original_task = form.save(commit=False)
             original_task.pet = pet
+            original_task.created_by = request.user
             original_task.save()
 
             if (
@@ -168,7 +172,7 @@ def task_create(request, pet_id):
                 and original_task.recurring_days > 0
                 and original_task.due_datetime
             ):
-                for i in range(1, original_task.recurring_days + 1):
+                for i in range(1, original_task.recurring_days):  # +1
                     new_dt = original_task.due_datetime + timedelta(days=i)
                     Task.objects.create(
                         pet=pet,
@@ -180,6 +184,7 @@ def task_create(request, pet_id):
                         # Preventing infinite loop
                         recurring=False,
                         recurring_days=0,
+                        created_by=original_task.created_by,
                     )
 
             return redirect(f"{reverse('pets:pet_detail', args=[pet_id])}?tab=tasks")
@@ -202,7 +207,21 @@ def task_edit(request, task_id):
     if request.method == 'POST':
         form = TaskEditForm(request.POST, instance=task)
         if form.is_valid():
-            form.save()
+            old_status = task.status
+            t = form.save(commit=False)
+            t.updated_by = request.user
+            t.mark_as_edited(request.user)
+            new_status = form.cleaned_data.get('status')
+
+            # if old_status in [Task.TaskStatus.PLANNED, Task.TaskStatus.OVERDUE] and \
+               # new_status in [Task.TaskStatus.DONE, Task.TaskStatus.SKIPPED]:
+            if new_status == Task.TaskStatus.DONE:
+                t.mark_as_done(request.user)
+            elif new_status == Task.TaskStatus.SKIPPED:
+                t.mark_as_skipped(request.user)
+
+            t.save()
+
             if next_url:
                 return redirect(next_url)
             return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=tasks")
@@ -222,9 +241,16 @@ def task_edit(request, task_id):
 def task_delete(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     pet = task.pet
+
+    if request.user != pet.owner:
+        return HttpResponseForbidden("You are not allowed to delete tasks for this pet.")
+
     if request.method == 'POST':
-        task.delete()
+        task.mark_as_deleted(request.user)
+        task.save()
+
         return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=tasks")
+
     return render(request, 'pets/task_confirm_delete.html', {
         'task': task,
         'pet': pet
@@ -238,12 +264,16 @@ def task_bulk_status(request, pet_id):
         task_ids = request.POST.getlist('task_ids')
         action = request.POST.get('action')  # 'done' or 'skipped'
         if task_ids and action in ['done', 'skipped']:
-            if action == 'done':
-                new_status = Task.TaskStatus.DONE
-            else:
-                new_status = Task.TaskStatus.SKIPPED
+            tasks = Task.objects.filter(id__in=task_ids, pet=pet)
 
-            Task.objects.filter(id__in=task_ids, pet=pet).update(status=new_status)
+            for t in tasks:
+                old_status = t.status
+                t.mark_as_edited(request.user)
+                if action == 'done':
+                    t.mark_as_done(request.user)
+                else:
+                    t.mark_as_skipped(request.user)
+                t.save()
 
         return redirect(f"{reverse('pets:pet_detail', args=[pet_id])}?tab=tasks")
 

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,11 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
+
+            lang = request.session.get('language', 'ua')
+            user.preferred_language = lang
+            user.save()
+
             login(request, user)
             return redirect('pets:pet_list')
     else:
@@ -34,8 +40,10 @@ def profile_view(request):
     if per_page not in ['10', '25', '50']:
         per_page = '10'
 
-    # Base queryset: all tasks where pet.owner = user
-    tasks_qs = Task.objects.filter(pet__owner=user)
+    tasks_qs = Task.objects.filter(
+        Q(pet__owner=user) | Q(pet__caregiver=user),
+        deleted_at__isnull=True
+    )
 
     if show_old != '1':
         tasks_qs = tasks_qs.filter(status__in=['planned', 'overdue'])

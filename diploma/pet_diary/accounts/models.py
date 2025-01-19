@@ -5,8 +5,8 @@ from accounts.managers import CustomUserManager
 
 
 class CommunicationMethod(models.TextChoices):
-    EMAIL = 'email', _("Email")
-    TELEGRAM = 'telegram', _("Telegram")
+    EMAIL = 'Email', _("Email")
+    TELEGRAM = 'Telegram', _("Telegram")
 
 LANGUAGE_CHOICES = [
     ('en', 'English'),
@@ -22,12 +22,12 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(
         _('first name'),
         max_length=150,
-        blank=True
+        blank=False,
     )
     last_name = models.CharField(
         _('last name'),
         max_length=150,
-        blank=True
+        blank=False,
     )
     phone_number = models.CharField(
         max_length=20,

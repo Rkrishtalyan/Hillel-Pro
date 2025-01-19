@@ -4,6 +4,7 @@ import logging
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.translation import gettext as _
+from django.utils import timezone
 from telegram import (
     Update, InlineKeyboardButton, InlineKeyboardMarkup
 )
@@ -16,8 +17,9 @@ from telegram.ext import (
     CallbackContext
 )
 
-from accounts.models import CustomUser
+from accounts.models import CustomUser, CommunicationMethod
 from pets.models import Task
+from pets.notifications import _notify_owner_about_result
 
 
 logging.basicConfig(level=logging.INFO)
@@ -50,9 +52,9 @@ class Command(BaseCommand):
     def start_command(self, update: Update, context: CallbackContext):
         user = self._get_user_by_tg(update.effective_user.id)
         if user:
-            text = _(f"Hello, {user.first_name or ''}! You are linked.")
+            reply = _(f"Hello, {user.first_name}! You are linked.")
         else:
-            text = _("Hello! You have not linked an account yet.")
+            reply = _("Hello! You have not linked an account yet.")
 
         keyboard = [
             [
@@ -65,7 +67,7 @@ class Command(BaseCommand):
             ]
         ]
         markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text(text, reply_markup=markup)
+        update.message.reply_text(reply, reply_markup=markup)
 
     def link_command(self, update: Update, context: CallbackContext):
         args = context.args
@@ -77,6 +79,7 @@ class Command(BaseCommand):
         try:
             user = CustomUser.objects.get(email=email)
             user.telegram_id = update.effective_user.id
+            user.communication_method = CommunicationMethod.TELEGRAM
             user.save()
             update.message.reply_text(
                 _(f"Successfully linked Telegram with {email}!")
@@ -134,17 +137,21 @@ class Command(BaseCommand):
             task_id = parts[1]
 
             try:
-                task = Task.objects.get(id=task_id)
+                task = Task.objects.get(id=task_id, deleted_at__isnull=True)
             except Task.DoesNotExist:
                 query.message.reply_text(_("Task not found."))
                 return
 
+            user = self._get_user_by_tg(query.from_user.id)
+            old_status = task.status
+
             if action == "DONE":
-                task.status = Task.TaskStatus.DONE
+                task.mark_as_done(user)
                 task.save()
                 query.message.reply_text(_("Task marked as done."))
+
             else:
-                task.status = Task.TaskStatus.SKIPPED
+                task.mark_as_skipped(user)
                 task.save()
                 query.message.reply_text(_("Task marked as skipped."))
         else:

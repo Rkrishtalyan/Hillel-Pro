@@ -30,7 +30,7 @@
           {% if pet.avatar %}
             <img src="{{ pet.avatar.url }}" class="card-img-top" alt="Avatar of {{ pet.name }}">
           {% else %}
-            <img src="{% static 'default_avatar.png' %}" class="card-img-top" alt="No Avatar">
+            <img src="{% static 'default_pet_avatar.png' %}" class="card-img-top" alt="No Avatar">
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ pet.name }}</h5>
@@ -50,6 +50,8 @@
       <tr>
         <th>{% trans "Avatar" %}</th>
         <th>{% trans "Name" %}</th>
+        <th>{% trans "Owner" %}</th>
+        <th>{% trans "Caregiver" %}</th>
         <th>{% trans "Species" %}</th>
         <th>{% trans "Breed" %}</th>
       </tr>
@@ -61,11 +63,17 @@
             {% if pet.avatar %}
               <img src="{{ pet.avatar.url }}" alt="{{ pet.name }}" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
             {% else %}
-              <img src="{% static 'default_avatar.png' %}" alt="No Avatar" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
+              <img src="{% static 'default_pet_avatar.png' %}" alt="No Avatar" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
             {% endif %}
           </td>
+          <td><a href="{% url 'pets:pet_detail' pet.id %}">{{ pet.name }}</a></td>
+          <td>{{ pet.owner.first_name }} {{ pet.owner.last_name }}</td>
           <td>
-            <a href="{% url 'pets:pet_detail' pet.id %}">{{ pet.name }}</a>
+            {% if pet.caregiver %}
+              {{ pet.caregiver.first_name }} {{ pet.caregiver.last_name }}
+            {% else %}
+              -
+            {% endif %}
           </td>
           <td>{{ pet.species|default:"-" }}</td>
           <td>{{ pet.breed|default:"-" }}</td>

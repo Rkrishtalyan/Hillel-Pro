@@ -29,9 +29,11 @@
         {% endif %}
 
         {% if task %}
-          <a href="{% url 'pets:task_delete' task.id %}" class="btn btn-danger float-end">
-            {% trans "Delete" %}
-          </a>
+          {% if request.user == pet.owner %}
+            <a href="{% url 'pets:task_delete' task.id %}" class="btn btn-danger float-end">
+                {% trans "Delete" %}
+            </a>
+          {% endif %}
         {% endif %}
       </div>
     </form>
