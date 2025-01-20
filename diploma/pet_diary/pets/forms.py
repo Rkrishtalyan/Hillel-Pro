@@ -101,11 +101,13 @@ class WeightLogForm(forms.ModelForm):
 class PetImageForm(forms.ModelForm):
     class Meta:
         model = PetImage
-        fields = ['image']
+        fields = ['path']
         labels = {
-            'image': _("Photo"),
+            'path': _("Photo"),
         }
-
+        widgets = {
+            'path': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
 
 # -------------------------------
 #    VaccinationLogForm

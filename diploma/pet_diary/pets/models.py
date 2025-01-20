@@ -3,8 +3,13 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
+import uuid
+import os
 
 
+# -------------------------------
+#       Pet model
+# -------------------------------
 class Pet(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -45,16 +50,31 @@ class Pet(models.Model):
         verbose_name_plural = _("Pets")
 
 
+# -------------------------------
+#       Image model
+# -------------------------------
+def pet_image_upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    unique_filename = f"{instance.image_name}.{ext}"
+    return os.path.join('pet_images', unique_filename)
+
+
 class PetImage(models.Model):
     pet = models.ForeignKey(
-        Pet,
+        'Pet',
         on_delete=models.CASCADE,
         related_name='images',
         verbose_name=_("Pet")
     )
-    image = models.ImageField(
-        upload_to='pet_images/',
+    path = models.ImageField(
+        upload_to=pet_image_upload_to,
         verbose_name=_("Image")
+    )
+    image_name = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        verbose_name=_("Image Name")
     )
     uploaded_at = models.DateTimeField(
         auto_now_add=True,
@@ -69,6 +89,9 @@ class PetImage(models.Model):
         verbose_name_plural = _("Pet Images")
 
 
+# -------------------------------
+#       Weigh Log model
+# -------------------------------
 class WeightLog(models.Model):
     pet = models.ForeignKey(
         Pet,
@@ -83,6 +106,43 @@ class WeightLog(models.Model):
         verbose_name=_("Weight (kg)")
     )
 
+    created_at = models.DateTimeField(auto_now_add=True,verbose_name=_("Created at"))
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=False,
+        on_delete=models.SET('User deleted'),
+        related_name='created_weight_logs',
+        verbose_name=_("Created by"),
+    )
+
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated at"),)
+
+    edited_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Edited at"))
+    edited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='edited_weight_logs',
+        verbose_name=_("Edited By")
+    )
+
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Deleted at"))
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='deleted_weight_logs',
+        verbose_name=_("Deleted By")
+    )
+
+    def mark_as_edited(self, user):
+        self.edited_at = timezone.now()
+        self.edited_by = user
+
+    def mark_as_deleted(self, user):
+        self.deleted_at = timezone.now()
+        self.deleted_by = user
+
     def __str__(self):
         return f"{self.pet.name} - {self.date}: {self.weight_kg} kg"
 
@@ -91,47 +151,9 @@ class WeightLog(models.Model):
         verbose_name_plural = _("Weight Logs")
 
 
-class VaccinationLog(models.Model):
-    pet = models.ForeignKey(
-        Pet,
-        on_delete=models.CASCADE,
-        related_name='vaccination_logs',
-        verbose_name=_("Pet")
-    )
-    vaccine_name = models.CharField(
-        max_length=200,
-        verbose_name=_("Vaccine Name")
-    )
-    date_administered = models.DateField(
-        verbose_name=_("Date Administered"),
-        default=timezone.now
-    )
-    next_due_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_("Next Due Date")
-    )
-    notes = models.TextField(
-        blank=True,
-        verbose_name=_("Notes")
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Created at")
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_("Updated at")
-    )
-
-    def __str__(self):
-        return f"{self.pet.name} - {self.vaccine_name}"
-
-    class Meta:
-        verbose_name = _("Vaccination Log")
-        verbose_name_plural = _("Vaccination Logs")
-
-
+# -------------------------------
+#       PetDocument model
+# -------------------------------
 class PetDocument(models.Model):
     class DocumentType(models.TextChoices):
         ANALYSIS = 'analysis', _("Analysis Result")
@@ -177,6 +199,9 @@ class PetDocument(models.Model):
         ordering = ['-doc_date', '-created_at']
 
 
+# -------------------------------
+#       Task model
+# -------------------------------
 class Task(models.Model):
 
     class TaskStatus(models.TextChoices):
@@ -336,3 +361,83 @@ class Task(models.Model):
     class Meta:
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
+
+
+# -------------------------------
+#     Vaccination Log model
+# -------------------------------
+class VaccinationLog(models.Model):
+    pet = models.ForeignKey(
+        Pet,
+        on_delete=models.CASCADE,
+        related_name='vaccination_logs',
+        verbose_name=_("Pet")
+    )
+    vaccine_name = models.CharField(
+        max_length=200,
+        verbose_name=_("Vaccine Name")
+    )
+    date_administered = models.DateField(
+        verbose_name=_("Date Administered"),
+        default=timezone.now
+    )
+    next_due_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("Next Due Date")
+    )
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=False,
+        on_delete=models.SET('User deleted'),
+        related_name='created_vaccination_logs',
+        verbose_name=_("Created by"),
+    )
+
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated at"), )
+
+    edited_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Edited at"))
+    edited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='edited_vaccination_logs',
+        verbose_name=_("Edited By")
+    )
+
+    deleted_at = models.DateTimeField(null=True, blank=True, verbose_name=_("Deleted at"))
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='deleted_vaccination_logs',
+        verbose_name=_("Deleted By")
+    )
+
+    related_task = models.ForeignKey(
+        Task,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='vaccination_log_record',
+        verbose_name=_("Related Task")
+    )
+
+    def mark_as_edited(self, user):
+        self.edited_at = timezone.now()
+        self.edited_by = user
+
+    def mark_as_deleted(self, user):
+        self.deleted_at = timezone.now()
+        self.deleted_by = user
+
+    def __str__(self):
+        return f"{self.pet.name} - {self.vaccine_name}"
+
+    class Meta:
+        verbose_name = _("Vaccination Log")
+        verbose_name_plural = _("Vaccination Logs")

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>{% trans "Delete Vaccination Log" %}</h2>
+    <p>{% trans "Are you sure you want to delete the following vaccination log?" %}</p>
+    <ul>
+      <li><strong>{% trans "Vaccine Name" %}:</strong> {{ vaccination_log.vaccine_name }}</li>
+      <li><strong>{% trans "Date Administered" %}:</strong> {{ vaccination_log.date_administered }}</li>
+      <li><strong>{% trans "Next Due Date" %}:</strong> {{ vaccination_log.next_due_date|default:"-" }}</li>
+      <li><strong>{% trans "Notes" %}:</strong> {{ vaccination_log.notes|default:"-" }}</li>
+    </ul>
+    <form method="post">
+      {% csrf_token %}
+      <a href="{% url 'pets:pet_detail' pet.id %}?tab=vaccinations" class="btn btn-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+    </form>
+  </div>
+{% endblock %}

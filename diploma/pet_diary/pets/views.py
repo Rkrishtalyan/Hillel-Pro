@@ -1,3 +1,4 @@
+import mimetypes
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -6,10 +7,11 @@ from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
 from django.core.paginator import Paginator
 from django.db import models
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, FileResponse
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
+import os
 
 from pets.notifications import _notify_owner_about_result
 from pets.utils import send_telegram_message
@@ -56,31 +58,62 @@ def pet_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     active_tab = request.GET.get('tab', 'tasks')
 
-    weight_logs = pet.weight_logs.order_by('-date')
-    photos = pet.images.order_by('-uploaded_at')
-    vaccinations = pet.vaccination_logs.order_by('-date_administered')
-    documents = pet.documents.all()
+    # ------------------------------
+    # Weight Logs Pagination (TAB=weight)
+    # ------------------------------
+    per_page_weight = request.GET.get('per_page_weight', '10')
+    if per_page_weight not in ['10', '25', '50']:
+        per_page_weight = '10'
+    weight_logs_qs = pet.weight_logs.filter(deleted_at__isnull=True).order_by('-date')
+    paginator_weight = Paginator(weight_logs_qs, int(per_page_weight))
+    page_number_weight = request.GET.get('page_weight', '1')
+    page_obj_weight = paginator_weight.get_page(page_number_weight)
 
     # ------------------------------
-    # Task List Logic (TAB=tasks)
+    # Tasks Pagination (TAB=tasks)
     # ------------------------------
     show_old = request.GET.get('show_old', '0')  # '0' or '1'
-    per_page = request.GET.get('per_page', '10')  # '10', '25', '50'
-    if per_page not in ['10', '25', '50']:
-        per_page = '10'
+    per_page_tasks = request.GET.get('per_page_tasks', '10')  # '10', '25', '50'
+    if per_page_tasks not in ['10', '25', '50']:
+        per_page_tasks = '10'
 
-    # Base queryset
     tasks_qs = pet.tasks.filter(deleted_at__isnull=True)
 
     # Hiding old tasks (done/skipped)
     if show_old != '1':
         tasks_qs = tasks_qs.filter(status__in=['planned', 'overdue'])
 
-    # Pagination
     tasks_qs = tasks_qs.order_by('due_datetime', 'id')
-    paginator = Paginator(tasks_qs, int(per_page))
-    page_number = request.GET.get('page', '1')
-    page_obj = paginator.get_page(page_number)
+    paginator_tasks = Paginator(tasks_qs, int(per_page_tasks))
+    page_number_tasks = request.GET.get('page_tasks', '1')
+    page_obj_tasks = paginator_tasks.get_page(page_number_tasks)
+
+    # ------------------------------
+    # Vaccinations Pagination (TAB=vaccinations)
+    # ------------------------------
+    per_page_vaccinations = request.GET.get('per_page_vaccinations', '10')
+    if per_page_vaccinations not in ['10', '25', '50']:
+        per_page_vaccinations = '10'
+    vaccinations_qs = pet.vaccination_logs.filter(deleted_at__isnull=True).order_by('-date_administered')
+    paginator_vaccinations = Paginator(vaccinations_qs, int(per_page_vaccinations))
+    page_number_vaccinations = request.GET.get('page_vaccinations', '1')
+    page_obj_vaccinations = paginator_vaccinations.get_page(page_number_vaccinations)
+
+    # ------------------------------
+    # Documents Pagination (TAB=documents)
+    # ------------------------------
+    per_page_documents = request.GET.get('per_page_documents', '10')
+    if per_page_documents not in ['10', '25', '50']:
+        per_page_documents = '10'
+    documents_qs = pet.documents.all().order_by('-doc_date')
+    paginator_documents = Paginator(documents_qs, int(per_page_documents))
+    page_number_documents = request.GET.get('page_documents', '1')
+    page_obj_documents = paginator_documents.get_page(page_number_documents)
+
+    # ------------------------------
+    # Photos
+    # ------------------------------
+    photos = pet.images.order_by('-uploaded_at')
 
     # --Context--
     context = {
@@ -88,15 +121,20 @@ def pet_detail(request, pet_id):
         'active_tab': active_tab,
 
         # For other tabs
-        'weight_logs': weight_logs,
+        'weight_logs': page_obj_weight.object_list,
+        'page_obj_weight': page_obj_weight,
+        'vaccinations': page_obj_vaccinations.object_list,
+        'page_obj_vaccinations': page_obj_vaccinations,
+        'documents': page_obj_documents.object_list,
+        'page_obj_documents': page_obj_documents,
         'photos': photos,
-        'vaccinations': vaccinations,
-        'documents': documents,
 
         # For tasks tab
-        'page_obj': page_obj,
+        'page_obj_tasks': page_obj_tasks,
         'show_old': show_old,
-        'per_page': per_page,
+        'per_page_tasks': per_page_tasks,
+
+        'form': PetImageForm(),
     }
 
     return render(request, 'pets/pet_detail.html', context)
@@ -292,6 +330,7 @@ def weight_create(request, pet_id):
         if form.is_valid():
             wl = form.save(commit=False)
             wl.pet = pet
+            wl.created_by = request.user
             wl.save()
             return redirect(f"{reverse('pets:pet_detail', args=[pet_id])}?tab=weight")
     else:
@@ -308,10 +347,17 @@ def weight_create(request, pet_id):
 def weight_edit(request, weight_id):
     wl = get_object_or_404(WeightLog, id=weight_id)
     pet = wl.pet
+
+    if request.user != pet.owner and request.user != pet.caregiver:
+        return HttpResponseForbidden("You are not allowed to edit weight logs for this pet.")
+
     if request.method == 'POST':
         form = WeightLogForm(request.POST, instance=wl)
         if form.is_valid():
-            form.save()
+            w = form.save(commit=False)
+            w.updated_by = request.user
+            w.mark_as_edited(request.user)
+            w.save()
             return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=weight")
     else:
         form = WeightLogForm(instance=wl)
@@ -321,6 +367,26 @@ def weight_edit(request, weight_id):
         'pet': pet,
         'title': _("Edit Weight"),
         'weight_log': wl,
+    })
+
+
+@login_required
+def weight_delete(request, weight_id):
+    weight_log = get_object_or_404(WeightLog, id=weight_id)
+    pet = weight_log.pet
+
+    if request.user != pet.owner:
+        return HttpResponseForbidden("You are not allowed to delete weight logs for this pet.")
+
+    if request.method == 'POST':
+        weight_log.mark_as_deleted(request.user)
+        weight_log.updated_by = request.user
+        weight_log.save()
+        return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=weight")
+
+    return render(request, 'pets/weight_confirm_delete.html', {
+        'weight_log': weight_log,
+        'pet': pet
     })
 
 
@@ -348,6 +414,57 @@ def photo_upload(request, pet_id):
     })
 
 
+@login_required
+def protected_media(request, pet_id, image_name):
+    pet = get_object_or_404(Pet, id=pet_id)
+
+    if pet.owner != request.user and pet.caregiver != request.user:
+        return HttpResponseForbidden("You do not have permission to access this file.")
+
+    try:
+        image = PetImage.objects.get(pet=pet, image_name=image_name)
+    except PetImage.DoesNotExist:
+        return HttpResponseForbidden("File not found.")
+
+    file_path = os.path.join(settings.MEDIA_ROOT, image.path.name)
+    if not os.path.exists(file_path):
+        return HttpResponseForbidden("File not found.")
+
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if not mime_type:
+        mime_type = 'application/octet-stream'
+
+    download = request.GET.get('download', '0')
+
+    if download == '1':
+        disposition = f'attachment; filename="{os.path.basename(file_path)}"'
+    else:
+        disposition = f'inline; filename="{os.path.basename(file_path)}"'
+
+    try:
+        file_handle = open(file_path, 'rb')
+        response = FileResponse(file_handle, content_type=mime_type)
+        response['Content-Disposition'] = disposition
+        return response
+    except Exception as e:
+        return HttpResponseForbidden("Error accessing the file.")
+
+
+@login_required
+def delete_pet_image(request, pet_id, image_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+
+    if pet.owner != request.user and pet.caregiver != request.user:
+        return HttpResponseForbidden("You do not have permission to delete this image.")
+
+    pet_image = get_object_or_404(PetImage, id=image_id, pet=pet)
+
+    pet_image.path.delete()
+    pet_image.delete()
+
+    return redirect(f"{reverse('pets:pet_detail', args=[pet_id])}?tab=photos")
+
+
 # ------------------------------------------------
 #                VACCINATIONS
 # ------------------------------------------------
@@ -360,6 +477,7 @@ def vaccination_create(request, pet_id):
         if form.is_valid():
             vac = form.save(commit=False)
             vac.pet = pet
+            vac.created_by = request.user
             vac.save()
             return redirect(f"{reverse('pets:pet_detail', args=[pet_id])}?tab=vaccinations")
     else:
@@ -376,10 +494,16 @@ def vaccination_create(request, pet_id):
 def vaccination_edit(request, vacc_id):
     vac = get_object_or_404(VaccinationLog, id=vacc_id)
     pet = vac.pet
+
+    if request.user != pet.owner and request.user != pet.caregiver:
+        return HttpResponseForbidden("You are not allowed to edit vaccination logs for this pet.")
+
     if request.method == 'POST':
         form = VaccinationLogForm(request.POST, instance=vac)
         if form.is_valid():
-            form.save()
+            v = form.save(commit=False)
+            v.updated_by = request.user
+            v.save()
             return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=vaccinations")
     else:
         form = VaccinationLogForm(instance=vac)
@@ -389,6 +513,26 @@ def vaccination_edit(request, vacc_id):
         'pet': pet,
         'title': _("Edit Vaccination"),
         'vaccination': vac,
+    })
+
+
+@login_required
+def vaccination_delete(request, vacc_id):
+    vaccination_log = get_object_or_404(VaccinationLog, id=vacc_id)
+    pet = vaccination_log.pet
+
+    if request.user != pet.owner:
+        return HttpResponseForbidden("You are not allowed to delete vaccination logs for this pet.")
+
+    if request.method == 'POST':
+        vaccination_log.mark_as_deleted(request.user)
+        vaccination_log.updated_by = request.user
+        vaccination_log.save()
+        return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=vaccinations")
+
+    return render(request, 'pets/vaccination_confirm_delete.html', {
+        'vaccination_log': vaccination_log,
+        'pet': pet
     })
 
 

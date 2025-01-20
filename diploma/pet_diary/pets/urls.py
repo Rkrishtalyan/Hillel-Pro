@@ -21,13 +21,16 @@ urlpatterns = [
     # WEIGHT
     path('<int:pet_id>/weight/create/', views.weight_create, name='weight_create'),
     path('weight/<int:weight_id>/edit/', views.weight_edit, name='weight_edit'),
-
+    path('weight/<int:weight_id>/delete/', views.weight_delete, name='weight_delete'),
     # PHOTOS
     path('<int:pet_id>/photos/upload/', views.photo_upload, name='photo_upload'),
+    path('protected-media/<int:pet_id>/<uuid:image_name>/', views.protected_media, name='protected_media'),
+    path('<int:pet_id>/image/<int:image_id>/delete/', views.delete_pet_image, name='delete_pet_image'),
 
     # VACCINATIONS
     path('<int:pet_id>/vaccinations/create/', views.vaccination_create, name='vaccination_create'),
     path('vaccinations/<int:vacc_id>/edit/', views.vaccination_edit, name='vaccination_edit'),
+    path('vaccinations/<int:vacc_id>/delete/', views.vaccination_delete, name='vaccination_delete'),
 
     # DOCUMENTS
     path('<int:pet_id>/documents/upload/', views.document_upload, name='document_upload'),
