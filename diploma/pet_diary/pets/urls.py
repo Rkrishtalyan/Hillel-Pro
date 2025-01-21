@@ -1,7 +1,6 @@
 from django.urls import path
 from pets import views
 
-
 app_name = 'pets'
 
 urlpatterns = [
@@ -22,10 +21,12 @@ urlpatterns = [
     path('<int:pet_id>/weight/create/', views.weight_create, name='weight_create'),
     path('weight/<int:weight_id>/edit/', views.weight_edit, name='weight_edit'),
     path('weight/<int:weight_id>/delete/', views.weight_delete, name='weight_delete'),
+
     # PHOTOS
     path('<int:pet_id>/photos/upload/', views.photo_upload, name='photo_upload'),
-    path('protected-media/<int:pet_id>/<uuid:image_name>/', views.protected_media, name='protected_media'),
+    path('<int:pet_id>/image/<int:image_id>/edit/', views.edit_pet_image, name='edit_pet_image'),
     path('<int:pet_id>/image/<int:image_id>/delete/', views.delete_pet_image, name='delete_pet_image'),
+    path('protected-media/<int:pet_id>/<str:image_name>/', views.protected_media, name='protected_media'),
 
     # VACCINATIONS
     path('<int:pet_id>/vaccinations/create/', views.vaccination_create, name='vaccination_create'),
@@ -35,4 +36,6 @@ urlpatterns = [
     # DOCUMENTS
     path('<int:pet_id>/documents/upload/', views.document_upload, name='document_upload'),
     path('documents/<int:doc_id>/edit/', views.document_edit, name='document_edit'),
+    path('pet/<int:pet_id>/document/<int:doc_id>/delete/', views.delete_pet_document, name='delete_pet_document'),
+    path('protected-media/documents/<int:pet_id>/<str:doc_name>/', views.protected_media_document, name='protected_media_document'),
 ]

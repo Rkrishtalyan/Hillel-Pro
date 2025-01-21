@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container mt-5">
+  <h2>{% trans "Confirm Delete Image" %}</h2>
+  <p>{% trans "Are you sure you want to delete the image:" %} <strong>{{ pet_image.image_name }}</strong>?</p>
+  
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="tab" value="{{ tab }}">
+    <input type="hidden" name="view_photos" value="{{ view_photos }}">
+    <input type="hidden" name="per_page_photos" value="{{ per_page_photos }}">
+    <input type="hidden" name="page_photos" value="{{ page_photos }}">
+    
+    <button type="submit" class="btn btn-danger">{% trans "Yes, delete" %}</button>
+    <a href="{% url 'pets:pet_detail' pet.id %}?tab={{ tab }}&view_photos={{ view_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" class="btn btn-secondary">
+      {% trans "Cancel" %}
+    </a>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container mt-5">
+  <h2>{% trans "Confirm Delete Document" %}</h2>
+  <p>{% trans "Are you sure you want to delete the document:" %} <strong>{{ pet_document.doc_file_name }}</strong>?</p>
+  
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">{% trans "Yes, delete" %}</button>
+    <a href="{% url 'pets:pet_detail' pet.id %}?tab=documents" class="btn btn-secondary">{% trans "Cancel" %}</a>
+  </form>
+</div>
+{% endblock %}

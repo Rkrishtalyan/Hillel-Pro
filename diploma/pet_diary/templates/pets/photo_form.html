@@ -13,12 +13,16 @@
       {% csrf_token %}
       {{ form|crispy }}
 
+      <input type="hidden" name="tab" value="{{ tab }}">
+      <input type="hidden" name="view_photos" value="{{ view_photos }}">
+      <input type="hidden" name="per_page_photos" value="{{ per_page_photos }}">
+      <input type="hidden" name="page_photos" value="{{ page_photos }}">
+
       <div class="mt-3">
         <button type="submit" class="btn btn-primary">
           {% trans "Save" %}
         </button>
-        <!-- Redirect to photos -->
-        <a href="{% url 'pets:pet_detail' pet.id %}?tab=photos" class="btn btn-secondary">
+        <a href="{% url 'pets:pet_detail' pet.id %}?tab={{ tab }}&view_photos={{ view_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" class="btn btn-secondary">
           {% trans "Cancel" %}
         </a>
       </div>
