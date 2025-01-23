@@ -42,6 +42,7 @@ class PetForm(forms.ModelForm):
             'chip_number',
             'avatar',
             'notes',
+            'ration',
             'confirmed_diagnoses',
             'current_prescriptions',
         ]
@@ -52,6 +53,7 @@ class PetForm(forms.ModelForm):
             'chip_number': _("Chip Number"),
             'avatar': _("Avatar"),
             'notes': _("Notes"),
+            'ration': _("Ration"),
             'confirmed_diagnoses': _("Confirmed Diagnoses"),
             'current_prescriptions': _("Current Prescriptions"),
         }
@@ -154,7 +156,11 @@ class TaskCreateForm(forms.ModelForm):
     due_datetime = forms.DateTimeField(
         required=False,
         label=_("Due DateTime"),
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
+        widget=forms.DateTimeInput(
+            attrs={'type': 'datetime-local'},
+            format='%Y-%m-%dT%H:%M'
+        ),
+        input_formats=['%Y-%m-%dT%H:%M']
     )
 
     class Meta:
@@ -186,7 +192,10 @@ class TaskEditForm(forms.ModelForm):
     due_datetime = forms.DateTimeField(
         required=False,
         label=_("Due DateTime"),
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
+        widget=forms.DateTimeInput(
+            attrs={'type': 'datetime-local'},
+            format='%Y-%m-%dT%H:%M'
+        ),
     )
 
     class Meta:

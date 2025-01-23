@@ -1,0 +1,7 @@
+{% if field.errors %}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">
+            {{ error|safe }}
+        </div>
+    {% endfor %}
+{% endif %}

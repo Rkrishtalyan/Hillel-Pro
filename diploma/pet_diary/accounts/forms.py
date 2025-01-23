@@ -1,5 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.utils.html import format_html
+
 from accounts.models import CustomUser
 from django.utils.translation import gettext_lazy as _
 from accounts.models import CommunicationMethod
@@ -76,7 +78,12 @@ class UserProfileForm(forms.ModelForm):
         if comm_method == CommunicationMethod.TELEGRAM and not telegram_id:
             self.add_error(
                 'communication_method',
-                _("You cannot select Telegram as communication method "
-                  "because you have no Telegram ID. Please link your Telegram first.")
+                format_html(
+                    _(
+                        "You cannot select Telegram as a communication method "
+                        "because you do not have a Telegram ID. Please link your Telegram account first.<br>"
+                        "Go to the link <a href='https://t.me/pet_bot_diary'>t.me/pet_bot_diary</a> and follow the instructions."
+                    )
+                )
             )
         return cleaned_data

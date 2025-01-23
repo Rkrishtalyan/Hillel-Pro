@@ -27,27 +27,29 @@
     {% else %}
       <img src="{% static 'default_pet_avatar.png' %}" class="card-img-top" alt="No Avatar">
     {% endif %}
-
+    <div class="pet-info-scrollable" style="max-height: 500px; overflow-y: auto;">
     <p><strong>{% trans "Birth Date" %}:</strong> {{ pet.birth_date|default:"-" }}</p>
     <p><strong>{% trans "Chip Number" %}:</strong> {{ pet.chip_number|default:"-" }}</p>
     <p><strong>{% trans "Notes" %}:</strong> {{ pet.notes|default:"-" }}</p>
+    <p><strong>{% trans "Ration" %}:</strong> {{ pet.ration|default:"-" }}</p>
     <p><strong>{% trans "Confirmed Diagnoses" %}:</strong> {{ pet.confirmed_diagnoses|default:"-" }}</p>
     <p><strong>{% trans "Current Prescriptions" %}:</strong> {{ pet.current_prescriptions|default:"-" }}</p>
     <p><strong>{% trans "Caregiver" %}:</strong>
       {% if pet.caregiver %}
         {{ pet.caregiver.first_name }} {{ pet.caregiver.last_name }}
       {% else %}
-        - 
+        -
       {% endif %}
     </p>
+    </div>
   </div>
 
   <div class="col-md-8">
     <ul class="nav nav-tabs" role="tablist">
       <li class="nav-item">
-        <a 
+        <a
           class="nav-link {% if active_tab|default:"tasks" == "tasks" %}active{% endif %}"
-          href="?tab=tasks" 
+          href="?tab=tasks"
           role="tab"
         >
           {% trans "Tasks" %}
@@ -106,15 +108,15 @@
           <div class="mb-3 d-flex justify-content-between">
             <div>
               {% if show_old == "1" %}
-                <a 
-                  href="?tab=tasks&show_old=0&per_page_tasks={{ per_page_tasks }}" 
+                <a
+                  href="?tab=tasks&show_old=0&per_page_tasks={{ per_page_tasks }}"
                   class="btn btn-outline-secondary"
                 >
                   {% trans "Hide old tasks" %}
                 </a>
               {% else %}
-                <a 
-                  href="?tab=tasks&show_old=1&per_page_tasks={{ per_page_tasks }}" 
+                <a
+                  href="?tab=tasks&show_old=1&per_page_tasks={{ per_page_tasks }}"
                   class="btn btn-outline-secondary"
                 >
                   {% trans "Show old tasks" %}
@@ -154,7 +156,7 @@
                 </thead>
                 <tbody>
                   {% for task in page_obj_tasks.object_list %}
-                    <tr>    
+                    <tr>
                       <td>
                         {% if task.status == 'planned' or task.status == 'overdue' %}
                           <input type="checkbox" name="task_ids" value="{{ task.id }}">
@@ -266,7 +268,7 @@
           {% endif %}
         </div>
       {% endif %}
-    
+
         <!-- PHOTOS TAB -->
       {% if active_tab == "photos" %}
         <div class="tab-pane fade show active" id="photos">
@@ -276,7 +278,7 @@
               {% trans "Upload Photo" %}
             </button>
           </div>
-      
+
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div class="btn-group" role="group">
               <form method="get" class="d-inline">
@@ -294,7 +296,7 @@
                 </button>
               </form>
             </div>
-      
+
             <form method="get" class="d-inline">
               <input type="hidden" name="tab" value="photos">
               <input type="hidden" name="view_photos" value="{{ view_mode_photos }}">
@@ -313,25 +315,32 @@
             </form>
           </div>
           <br/>
-        
+
           {% if page_obj_photos.object_list %}
             {% if view_mode_photos == "gallery" %}
               <!-- Gallery View -->
               <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
                 {% for photo in page_obj_photos.object_list %}
                   <div class="col">
-                    <div class="card">
+                    <div class="card position-relative">
                       <div style="height: 200px; overflow: hidden;">
                         {% if pet.owner == request.user or pet.caregiver == request.user %}
                           <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ photo.id }}">
                             <img src="{% url 'pets:protected_media' pet.id photo.image_name %}" alt="Photo of {{ pet.name }}" 
                                  style="object-fit: scale-down; width: 100%; height: 100%;">
                           </a>
+                          <a href="{% url 'pets:edit_pet_image' pet.id photo.id %}?tab=photos&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" 
+                             class="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2"
+{#                             data-bs-toggle="tooltip" data-bs-placement="top" #}
+                             title="{% trans 'Edit Photo' %}">
+                            <i class="fas fa-pencil-alt"></i>
+                          </a>
                         {% else %}
                           <img src="{% url 'pets:protected_media' pet.id photo.image_name %}" alt="Photo of {{ pet.name }}" 
                                style="object-fit: scale-down; width: 100%; height: 100%;">
                         {% endif %}
                       </div>
+                      
                       {% if pet.owner == request.user or pet.caregiver == request.user %}
                         <div class="modal fade" id="imageModal{{ photo.id }}" tabindex="-1" aria-labelledby="imageModalLabel{{ photo.id }}" aria-hidden="true">
                           <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -358,7 +367,6 @@
                                 </a>
                                 <a href="{% url 'pets:delete_pet_image' pet.id photo.id %}?tab={{ active_tab }}&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" 
                                    class="btn btn-danger">
-                                       {# onclick="return confirm('{% trans "Are you sure you want to delete this image?" %}');" #}>
                                   {% trans "Delete" %}
                                 </a>
                               </div>
@@ -398,9 +406,9 @@
                           <a href="{% url 'pets:edit_pet_image' pet.id photo.id %}?tab=photos&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" class="btn btn-sm btn-secondary">
                               {% trans "Edit" %}
                           </a>
-                          <a href="{% url 'pets:delete_pet_image' pet.id photo.id %}?tab={{ active_tab }}&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" 
+                          <a href="{% url 'pets:delete_pet_image' pet.id photo.id %}?tab={{ active_tab }}&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}"
                              class="btn btn-sm btn-danger ms-1">
-                                 {# onclick="return confirm('{% trans "Are you sure you want to delete this image?" %}');" #}>
+                                 {# onclick="return confirm('{% trans "Are you sure you want to delete this image?" %}');" #}
                             {% trans "Delete" %}
                           </a>
                         </td>
@@ -427,11 +435,11 @@
                               {% endif %}
                             </div>
                             <div class="modal-footer justify-content-between">
-                              <a href="{% url 'pets:protected_media' pet.id photo.image_name %}?download=1" 
+                              <a href="{% url 'pets:protected_media' pet.id photo.image_name %}?download=1"
                                  class="btn btn-primary">
                                 {% trans "Download" %}
                               </a>
-                              <a href="{% url 'pets:delete_pet_image' pet.id photo.id %}?tab={{ active_tab }}&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}" 
+                              <a href="{% url 'pets:delete_pet_image' pet.id photo.id %}?tab={{ active_tab }}&view_photos={{ view_mode_photos }}&per_page_photos={{ per_page_photos }}&page_photos={{ page_photos }}"
                                  class="btn btn-danger">
                                      {# onclick="return confirm('{% trans "Are you sure you want to delete this image?" %}');" #}>
                                 {% trans "Delete" %}
@@ -452,7 +460,7 @@
           {% endif %}
         </div>
       {% endif %}
-    
+
         <div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -614,3 +622,9 @@
   </div>
 </div>
 {% endblock %}
+{#<script>#}
+{#  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))#}
+{#  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {#}
+{#    return new bootstrap.Tooltip(tooltipTriggerEl)#}
+{#  })#}
+{#</script>#}

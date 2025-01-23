@@ -67,110 +67,121 @@
       </div>
     </div>
 
-    <!-- MAss status update form -->
-    <form method="POST">
-      {% csrf_token %}
-      <input type="hidden" name="bulk_update" value="1">
+    {% if page_obj.object_list %}
+      <!-- Mass status update form -->
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="bulk_update" value="1">
 
-      <table class="table table-sm table-bordered">
-        <thead>
-          <tr>
-            <th style="width:40px;"></th>
-            <th>{% trans "Title" %}</th>
-            <th>{% trans "Pet" %}</th>
-            <th>{% trans "Due Date/Time" %}</th>
-            <th>{% trans "Status" %}</th>
-            <th style="width:120px;">{% trans "Actions" %}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for task in page_obj %}
+        <table class="table table-sm table-bordered">
+          <thead>
             <tr>
-              <td>
-                {% if task.status == 'planned' or task.status == 'overdue' %}
-                  <input type="checkbox" name="task_ids" value="{{ task.id }}">
-                {% endif %}
-              </td>
-              <td>{{ task.title }}</td>
-              <td>
-                <a href="{% url 'pets:pet_detail' task.pet.id %}">
-                  {{ task.pet.name }}
-                </a>
-              </td>
-              <td>
-                {% if task.due_datetime %}{{ task.due_datetime }}{% endif %}
-              </td>
-              <td>
-                {% if task.status == 'planned' %}
-                  <span class="badge bg-primary">{% trans "Planned" %}</span>
-                {% elif task.status == 'overdue' %}
-                  <span class="badge bg-danger">{% trans "Overdue" %}</span>
-                {% elif task.status == 'done' %}
-                  <span class="badge bg-success">{% trans "Done" %}</span>
-                {% elif task.status == 'skipped' %}
-                  <span class="badge bg-secondary">{% trans "Skipped" %}</span>
-                {% endif %}
-              </td>
-              <td>
-                <a href="{% url 'pets:task_edit' task.id %}?next={{ request.path }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}" class="btn btn-sm btn-secondary">
-                    Edit
-                </a>
-              </td>
+              <th style="width:40px;"></th>
+              <th>{% trans "Title" %}</th>
+              <th>{% trans "Pet" %}</th>
+              <th>{% trans "Due Date/Time" %}</th>
+              <th>{% trans "Status" %}</th>
+              <th style="width:200px;">{% trans "Actions" %}</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for task in page_obj %}
+              <tr>
+                <td>
+                  {% if task.status == 'planned' or task.status == 'overdue' %}
+                    <input type="checkbox" name="task_ids" value="{{ task.id }}">
+                  {% endif %}
+                </td>
+                <td>{{ task.title }}</td>
+                <td>
+                  <a href="{% url 'pets:pet_detail' task.pet.id %}">
+                    {{ task.pet.name }}
+                  </a>
+                </td>
+                <td>
+                  {% if task.due_datetime %}{{ task.due_datetime }}{% else %}-{% endif %}
+                </td>
+                <td>
+                  {% if task.status == 'planned' %}
+                    <span class="badge bg-primary">{% trans "Planned" %}</span>
+                  {% elif task.status == 'overdue' %}
+                    <span class="badge bg-danger">{% trans "Overdue" %}</span>
+                  {% elif task.status == 'done' %}
+                    <span class="badge bg-success">{% trans "Done" %}</span>
+                  {% elif task.status == 'skipped' %}
+                    <span class="badge bg-secondary">{% trans "Skipped" %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{% url 'pets:task_edit' task.id %}?next={{ request.get_full_path }}" class="btn btn-sm btn-secondary">
+                      {% trans "Edit" %}
+                  </a>
+                  {% if request.user == task.pet.owner %}
+                    <a href="{% url 'pets:task_delete' task.id %}?next={{ request.get_full_path }}" class="btn btn-sm btn-danger ms-1">
+                        {% trans "Delete" %}
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
 
-      <div class="mt-2">
-        <button type="submit" name="action" value="done" class="btn btn-success btn-sm">
-          {% trans "Mark as Done" %}
-        </button>
-        <button type="submit" name="action" value="skipped" class="btn btn-warning btn-sm">
-          {% trans "Mark as Skipped" %}
-        </button>
-      </div>
-    </form>
+        <div class="mt-2">
+          <button type="submit" name="action" value="done" class="btn btn-success btn-sm">
+            {% trans "Mark as Done" %}
+          </button>
+          <button type="submit" name="action" value="skipped" class="btn btn-warning btn-sm">
+            {% trans "Mark as Skipped" %}
+          </button>
+        </div>
+      </form>
 
-    <!-- Pagination -->
-    <nav class="mt-3">
-      <ul class="pagination">
-        {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?show_old={{ show_old }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">
-              {% trans "Previous" %}
-            </a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">{% trans "Previous" %}</span>
-          </li>
-        {% endif %}
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <nav class="mt-3">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?show_old={{ show_old }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}">
+                  {% trans "Previous" %}
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">{% trans "Previous" %}</span>
+              </li>
+            {% endif %}
 
-        {% for num in page_obj.paginator.page_range %}
-          {% if page_obj.number == num %}
-            <li class="page-item active">
-              <span class="page-link">{{ num }}</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" href="?show_old={{ show_old }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <li class="page-item active">
+                  <span class="page-link">{{ num }}</span>
+                </li>
+              {% else %}
+                <li class="page-item">
+                  <a class="page-link" href="?show_old={{ show_old }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
 
-        {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?show_old={{ show_old }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">
-              {% trans "Next" %}
-            </a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">{% trans "Next" %}</span>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?show_old={{ show_old }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}">
+                  {% trans "Next" %}
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">{% trans "Next" %}</span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    {% else %}
+      <p class="text-muted">{% trans "No tasks available." %}</p>
+    {% endif %}
   </div>
 </div>
 

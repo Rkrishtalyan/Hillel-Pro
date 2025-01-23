@@ -84,7 +84,6 @@ class Pet(BaseModel):
     chip_number = models.CharField(max_length=50, blank=True, verbose_name=_("Chip Number"))
     avatar = models.ImageField(upload_to='pet_avatars/', null=True, blank=True, verbose_name=_("Avatar"))
     notes = models.TextField(blank=True, verbose_name=_("Notes"))
-
     confirmed_diagnoses = models.TextField(
         blank=True,
         verbose_name=_("Confirmed Diagnoses")
@@ -92,6 +91,10 @@ class Pet(BaseModel):
     current_prescriptions = models.TextField(
         blank=True,
         verbose_name=_("Current Prescriptions")
+    )
+    ration = models.TextField(
+        blank=True,
+        verbose_name=_("Ration")
     )
 
     def __str__(self):

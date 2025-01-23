@@ -1,42 +1,34 @@
-import pytz
 from django.utils import translation, timezone
+from django.utils.deprecation import MiddlewareMixin
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
-class UserLocaleTimeZoneMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
+class UserLocaleTimeZoneMiddleware(MiddlewareMixin):
+    def process_request(self, request):
         user = request.user
         if user.is_authenticated:
-            # Language activation for registered users
             lang = user.preferred_language or 'ua'
             translation.activate(lang)
             request.LANGUAGE_CODE = lang
 
-            # Timezone activation
-            try:
-                user_tz = pytz.timezone(user.preferred_timezone)
-            except Exception:
-                user_tz = pytz.timezone('UTC')
-            timezone.activate(user_tz)
+            timezone_str = user.preferred_timezone or 'UTC'
         else:
-            # Language activation for anonymous users (from session)
             lang = request.session.get('language', 'ua')
             translation.activate(lang)
             request.LANGUAGE_CODE = lang
 
-            # Timezone activation for anonymous users
-            tz = request.session.get('timezone', 'UTC')
-            try:
-                user_tz = pytz.timezone(tz)
-            except Exception:
-                user_tz = pytz.timezone('UTC')
-            timezone.activate(user_tz)
+            timezone_str = request.session.get('timezone', 'UTC')
 
-        response = self.get_response(request)
+        try:
+            user_tz = ZoneInfo(timezone_str)
+        except ZoneInfoNotFoundError:
+            user_tz = ZoneInfo('UTC')
+        except Exception:
+            user_tz = ZoneInfo('UTC')
 
+        timezone.activate(user_tz)
+
+    def process_response(self, request, response):
         translation.deactivate()
         timezone.deactivate()
-
         return response

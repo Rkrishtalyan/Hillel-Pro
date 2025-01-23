@@ -4,13 +4,18 @@ from datetime import timedelta
 from celery import shared_task
 from django.utils import timezone
 from django.conf import settings
+from django.core.mail import send_mail
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 
 from pets.models import Task
-from accounts.models import CustomUser
+from accounts.models import CustomUser, CommunicationMethod
 
 
 _bot = None
+
+CD_NOTIFY_DONE = "NOTIFY_DONE"
+CD_NOTIFY_SKIP = "NOTIFY_SKIP"
+SEPARATOR = "|"
 
 
 def get_bot() -> Bot:
@@ -26,7 +31,7 @@ def check_tasks_for_reminders():
     now_utc = timezone.now()
     tasks_qs = Task.objects.filter(
         remind_me=True,
-        status__in=['planned', 'overdue'],
+        status__in=[Task.TaskStatus.PLANNED, Task.TaskStatus.OVERDUE],
         reminder_sent=False,
         due_datetime__isnull=False,
         deleted_at__isnull=True
@@ -37,7 +42,8 @@ def check_tasks_for_reminders():
 
         if remind_moment_utc <= now_utc < t.due_datetime:
             user = t.pet.caregiver if t.pet.caregiver else t.pet.owner
-            _send_task_reminder(user, t)
+            if user:
+                _send_task_reminder(user, t)
             t.save()
 
 
@@ -60,16 +66,20 @@ def _parse_remind_before(rb: str) -> timedelta:
 
 
 def _send_task_reminder(user: CustomUser, task: Task):
-    msg_text = f"Reminder: Task '{task.title}' is due at {task.due_datetime}!"
+    due_str = _format_datetime_for_user(task.due_datetime, user)
+    msg_text = f"Reminder: Task '{task.title}' is due at {due_str}!"
+
+    callback_done = f"{CD_NOTIFY_DONE}{SEPARATOR}task_id={task.id}"
+    callback_skip = f"{CD_NOTIFY_SKIP}{SEPARATOR}task_id={task.id}"
     keyboard = [
         [
-            InlineKeyboardButton("Done", callback_data=f"DONE:{task.id}"),
-            InlineKeyboardButton("Skipped", callback_data=f"SKIP:{task.id}"),
+            InlineKeyboardButton("Done", callback_data=callback_done),
+            InlineKeyboardButton("Skip", callback_data=callback_skip),
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
 
-    if user.communication_method == 'telegram' and user.telegram_id:
+    if user.communication_method == CommunicationMethod.TELEGRAM and user.telegram_id:
         bot = get_bot()
         bot.send_message(
             chat_id=user.telegram_id,
@@ -78,7 +88,6 @@ def _send_task_reminder(user: CustomUser, task: Task):
         )
         task.mark_as_reminded_via_telegram()
     else:
-        from django.core.mail import send_mail
         send_mail(
             subject="Task Reminder",
             message=msg_text,
@@ -86,3 +95,18 @@ def _send_task_reminder(user: CustomUser, task: Task):
             recipient_list=[user.email],
         )
         task.mark_as_reminded_via_email()
+
+
+def _format_datetime_for_user(dt, user: CustomUser) -> str:
+    if not dt:
+        return "N/A"
+
+    if user and user.preferred_timezone:
+        try:
+            user_tz = pytz.timezone(user.preferred_timezone)
+            local_dt = dt.astimezone(user_tz)
+        except Exception:
+            local_dt = dt
+    else:
+        local_dt = dt
+    return local_dt.strftime("%Y-%m-%d %H:%M")

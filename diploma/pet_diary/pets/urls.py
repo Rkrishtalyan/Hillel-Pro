@@ -23,10 +23,10 @@ urlpatterns = [
     path('weight/<int:weight_id>/delete/', views.weight_delete, name='weight_delete'),
 
     # PHOTOS
-    path('<int:pet_id>/photos/upload/', views.photo_upload, name='photo_upload'),
+    path('<int:pet_id>/photos/upload/', views.upload_pet_image, name='photo_upload'),
     path('<int:pet_id>/image/<int:image_id>/edit/', views.edit_pet_image, name='edit_pet_image'),
     path('<int:pet_id>/image/<int:image_id>/delete/', views.delete_pet_image, name='delete_pet_image'),
-    path('protected-media/<int:pet_id>/<str:image_name>/', views.protected_media, name='protected_media'),
+    path('protected-media/<int:pet_id>/<str:image_name>/', views.download_pet_image, name='protected_media'),
 
     # VACCINATIONS
     path('<int:pet_id>/vaccinations/create/', views.vaccination_create, name='vaccination_create'),

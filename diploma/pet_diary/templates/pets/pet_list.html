@@ -4,20 +4,37 @@
 {% block content %}
     
 <div class="row mb-3">
-  <div class="col-md-6">
-    <h1>{% trans "List of Pets" %}</h1>
+  <div class="col-md-6 d-flex align-items-center">
+    <h1 class="mb-0">{% trans "List of Pets" %}</h1>
   </div>
   <div class="col-md-6 text-end">
     <a href="{% url 'pets:pet_create' %}" class="btn btn-primary">{% trans "Add a new pet" %}</a>
+  </div>
+</div>
 
-    <div class="btn-group ms-2" role="group">
-      <a href="?view=list" class="btn btn-outline-secondary {% if view_mode == 'list' %}active{% endif %}">
-        {% trans "List View" %}
-      </a>
-      <a href="?view=gallery" class="btn btn-outline-secondary {% if view_mode == 'gallery' %}active{% endif %}">
+<div class="row mb-3">
+  <div class="col-md-6">
+    <div class="btn-group" role="group" aria-label="{% trans 'View mode' %}">
+      <a href="?view=gallery{% if per_page != '12' %}&per_page_gallery={{ per_page }}{% endif %}" class="btn btn-outline-secondary {% if view_mode == 'gallery' %}active{% endif %}">
         {% trans "Gallery View" %}
       </a>
+      <a href="?view=list{% if per_page != '10' %}&per_page_list={{ per_page }}{% endif %}" class="btn btn-outline-secondary {% if view_mode == 'list' %}active{% endif %}">
+        {% trans "List View" %}
+      </a>
     </div>
+  </div>
+  <div class="col-md-6 text-end">
+    <form method="get" class="d-inline">
+      <input type="hidden" name="view" value="{{ view_mode }}">
+      <label for="per_page" class="me-2">{% trans "Per page:" %}</label>
+      <select name="{% if view_mode == 'gallery' %}per_page_gallery{% else %}per_page_list{% endif %}" id="per_page" class="form-select form-select-sm d-inline-block" onchange="this.form.submit()" style="width: auto; display: inline-block;">
+        {% for option in per_page_options %}
+          <option value="{{ option }}" {% if per_page == option %}selected{% endif %}>
+            {{ option }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
   </div>
 </div>
 
@@ -26,25 +43,71 @@
   <div class="row">
     {% for pet in pets %}
       <div class="col-md-3 mb-4">
-        <div class="card">
+        <div class="card" style="height: 500px; display: flex; flex-direction: column;">
           {% if pet.avatar %}
-            <img src="{{ pet.avatar.url }}" class="card-img-top" alt="Avatar of {{ pet.name }}">
+            <img src="{{ pet.avatar.url }}" class="card-img-top" alt="Avatar of {{ pet.name }}" style="height: 350px; object-fit: cover;">
           {% else %}
-            <img src="{% static 'default_pet_avatar.png' %}" class="card-img-top" alt="No Avatar">
+            <img src="{% static 'default_pet_avatar.png' %}" class="card-img-top" alt="No Avatar" style="height: 350px; object-fit: cover;">
           {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ pet.name }}</h5>
-            <p class="card-text">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ pet.name }}">{{ pet.name }}</h5>
+            <p class="card-text text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ pet.species }}{% if pet.breed %}, {{ pet.breed }}{% endif %}">
               {{ pet.species }}{% if pet.breed %}, {{ pet.breed }}{% endif %}
             </p>
-            <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-primary">{% trans "View Details" %}</a>
+            <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-primary mt-auto">{% trans "View Details" %}</a>
           </div>
         </div>
       </div>
     {% endfor %}
   </div>
+  
+  <!-- Pagination -->
+  {% if paginator.num_pages > 1 %}
+    <nav aria-label="{% trans 'Page navigation' %}">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?view=gallery&per_page_gallery={{ per_page }}&page={{ page_obj.previous_page_number }}" aria-label="{% trans 'Previous' %}">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-label="{% trans 'Previous' %}">
+              <span aria-hidden="true">&laquo;</span>
+            </span>
+          </li>
+        {% endif %}
+        
+        {% for num in paginator.page_range %}
+          {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?view=gallery&per_page_gallery={{ per_page }}&page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?view=gallery&per_page_gallery={{ per_page }}&page={{ page_obj.next_page_number }}" aria-label="{% trans 'Next' %}">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-label="{% trans 'Next' %}">
+              <span aria-hidden="true">&raquo;</span>
+            </span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+
 {% else %}
-  <!-- List View (default) -->
+  <!-- List View -->
   <table class="table table-striped">
     <thead>
       <tr>
@@ -75,11 +138,57 @@
               -
             {% endif %}
           </td>
-          <td>{{ pet.species|default:"-" }}</td>
-          <td>{{ pet.breed|default:"-" }}</td>
+          <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ pet.species|default:"-" }}">{{ pet.species|default:"-" }}</td>
+          <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ pet.breed|default:"-" }}">{{ pet.breed|default:"-" }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+  
+  <!-- Pagination -->
+  {% if paginator.num_pages > 1 %}
+    <nav aria-label="{% trans 'Page navigation' %}">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?view=list&per_page_list={{ per_page }}&page={{ page_obj.previous_page_number }}" aria-label="{% trans 'Previous' %}">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-label="{% trans 'Previous' %}">
+              <span aria-hidden="true">&laquo;</span>
+            </span>
+          </li>
+        {% endif %}
+        
+        {% for num in paginator.page_range %}
+          {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?view=list&per_page_list={{ per_page }}&page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?view=list&per_page_list={{ per_page }}&page={{ page_obj.next_page_number }}" aria-label="{% trans 'Next' %}">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-label="{% trans 'Next' %}">
+              <span aria-hidden="true">&raquo;</span>
+            </span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 {% endif %}
+
 {% endblock %}

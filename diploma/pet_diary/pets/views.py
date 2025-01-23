@@ -1,11 +1,13 @@
 import mimetypes
+from tkinter import Image
+
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.core.paginator import Paginator
 from django.db import models
 from django.http import HttpResponseForbidden, FileResponse
@@ -43,15 +45,37 @@ from pets.forms import (
 
 @login_required
 def pet_list(request):
-    view_mode = request.GET.get('view', 'list')
-    pets = Pet.objects.filter(
+    view_mode = request.GET.get('view', 'gallery')
+
+    if view_mode == 'gallery':
+        per_page = request.GET.get('per_page_gallery', '12')
+        per_page_options = ['12', '24', '48']
+        if per_page not in per_page_options:
+            per_page = '12'
+    else:
+        per_page = request.GET.get('per_page_list', '10')
+        per_page_options = ['10', '25', '50']
+        if per_page not in per_page_options:
+            per_page = '10'
+
+    pets_qs = Pet.objects.filter(
         models.Q(owner=request.user) | models.Q(caregiver=request.user)
     ).order_by('name')
 
-    return render(request, 'pets/pet_list.html', {
-        'pets': pets,
+    paginator = Paginator(pets_qs, int(per_page))
+    page_number = request.GET.get('page', '1')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'pets': page_obj.object_list,
+        'page_obj': page_obj,
+        'paginator': paginator,
         'view_mode': view_mode,
-    })
+        'per_page': per_page,
+        'per_page_options': per_page_options,
+    }
+
+    return render(request, 'pets/pet_list.html', context)
 
 
 @login_required
@@ -208,7 +232,28 @@ def pet_delete(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     if request.method == 'POST':
         pet.mark_as_deleted(request.user)
-        # Add extra logic here to mark all related entities as deleted as well
+        tasks = Task.objects.filter(pet=pet, deleted_at__isnull=True)
+        for t in tasks:
+            t.mark_as_deleted(request.user)
+        weight_records = WeightLog.objects.filter(pet=pet, deleted_at__isnull=True)
+        for w in weight_records:
+            w.mark_as_deleted(request.user)
+        vaccinations = VaccinationLog.objects.filter(pet=pet, deleted_at__isnull=True)
+        for v in vaccinations:
+            v.mark_as_deleted(request.user)
+        images = PetImage.objects.filter(pet=pet, deleted_at__isnull=True)
+        for i in images:
+            i.path.delete(save=False)
+            i.mark_as_deleted(request.user)
+            i.path.name = 'pet_images/deleted_image.jpg'
+            i.save()
+        documents = PetDocument.objects.filter(pet=pet, deleted_at__isnull=True)
+        for d in documents:
+            d.doc_file.delete(save=False)
+            d.mark_as_deleted(request.user)
+            d.doc_file.name = 'pet_documents/deleted_document.pdf'
+            d.save()
+
         pet.save()
         return redirect('pets:pet_list')
     return render(request, 'pets/pet_confirm_delete.html', {'pet': pet})
@@ -228,6 +273,10 @@ def task_create(request, pet_id):
             original_task = form.save(commit=False)
             original_task.pet = pet
             original_task.created_by = request.user
+            print("POST raw:", request.POST.get('due_datetime'))
+            print("cleaned_data:", form.cleaned_data.get('due_datetime'))
+            print(timezone.get_current_timezone())
+            print(datetime.now(), datetime.utcnow())
             original_task.save()
 
             if (
@@ -307,15 +356,20 @@ def task_delete(request, task_id):
     if request.user != pet.owner:
         return HttpResponseForbidden("You are not allowed to delete tasks for this pet.")
 
+    next_url = request.GET.get('next')
+
     if request.method == 'POST':
         task.mark_as_deleted(request.user)
         task.save()
 
+        if next_url:
+            return redirect(next_url)
         return redirect(f"{reverse('pets:pet_detail', args=[pet.id])}?tab=tasks")
 
     return render(request, 'pets/task_confirm_delete.html', {
         'task': task,
-        'pet': pet
+        'pet': pet,
+        'next_url': next_url,
     })
 
 
@@ -416,7 +470,7 @@ def weight_delete(request, weight_id):
 # ------------------------------------------------
 
 @login_required
-def photo_upload(request, pet_id):
+def upload_pet_image(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
 
     if request.method == 'POST':
@@ -500,7 +554,7 @@ def edit_pet_image(request, pet_id, image_id):
 
 
 @login_required
-def protected_media(request, pet_id, image_name):
+def download_pet_image(request, pet_id, image_name):
     pet = get_object_or_404(Pet, id=pet_id)
 
     if pet.owner != request.user and pet.caregiver != request.user:
