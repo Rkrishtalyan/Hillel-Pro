@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'telegram_bot',
 ]
 
 MIDDLEWARE = [
@@ -139,7 +140,7 @@ LANGUAGES = [
     ('ua', _('Ukrainian')),
 ]
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'ua'
 
 TIME_ZONE = 'UTC'
 USE_TZ = True

@@ -1,6 +1,6 @@
 from django.core.mail import send_mail
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from pets.models import Task
 from pets.utils import send_telegram_message
@@ -20,10 +20,13 @@ def _notify_owner_about_result(task, new_status):
         status_text = "skipped"
 
     message_text = _(
-        f"{pet.name}'s caretaker {caregiver.first_name or caregiver.email} "
-        f"has marked the task '{task.title}' as {status_text}."
+        "{pet_name}'s caretaker {caretaker} has marked the task '{task_title}' as {status}."
+    ).format(
+        pet_name=pet.name,
+        caretaker=caregiver.first_name or caregiver.email,
+        task_title=task.title,
+        status=status_text,
     )
-
     if owner.communication_method == CommunicationMethod.TELEGRAM and owner.telegram_id:
         send_telegram_message(owner, message_text)
     else:

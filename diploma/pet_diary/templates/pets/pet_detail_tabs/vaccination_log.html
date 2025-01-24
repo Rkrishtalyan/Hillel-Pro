@@ -1,0 +1,64 @@
+{% load pagination %}
+{% load i18n %}
+{% if active_tab == "vaccinations" %}
+  <div class="tab-pane fade show active" id="vaccinations">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="m-0">{% trans "Vaccination Log" %}</h5>
+      <a href="{% url 'pets:vaccination_create' pet.id %}" class="btn btn-success">
+        {% trans "Add Vaccination" %}
+      </a>
+    </div>
+
+    <div class="mb-3 d-flex justify-content-end">
+      <form method="get" class="d-inline">
+        <input type="hidden" name="tab" value="vaccinations">
+        <label for="id_per_page_vaccinations">{% trans "Per page" %}:</label>
+        <select name="per_page_vaccinations" id="id_per_page_vaccinations" onchange="this.form.submit()">
+          <option value="10" {% if per_page_vaccinations == "10" %}selected{% endif %}>10</option>
+          <option value="25" {% if per_page_vaccinations == "25" %}selected{% endif %}>25</option>
+          <option value="50" {% if per_page_vaccinations == "50" %}selected{% endif %}>50</option>
+        </select>
+      </form>
+    </div>
+
+    {% if vaccinations %}
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>{% trans "Date Administered" %}</th>
+            <th>{% trans "Vaccine Name" %}</th>
+            <th>{% trans "Next Due Date" %}</th>
+            <th>{% trans "Notes" %}</th>
+            {% if request.user == pet.owner %}
+              <th>{% trans "Actions" %}</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for vac in vaccinations %}
+            <tr>
+              <td>{{ vac.date_administered }}</td>
+              <td>{{ vac.vaccine_name }}</td>
+              <td>{{ vac.next_due_date|default:"-" }}</td>
+              <td>{{ vac.notes|default:"-" }}</td>
+              {% if request.user == pet.owner %}
+                <td>
+                  <a href="{% url 'pets:vaccination_edit' vac.id %}" class="btn btn-sm btn-secondary">
+                    {% trans "Edit" %}
+                  </a>
+                  <a href="{% url 'pets:vaccination_delete' vac.id %}" class="btn btn-sm btn-danger ms-1">
+                    {% trans "Delete" %}
+                  </a>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% render_pagination page_obj_vaccinations "vaccinations" "per_page_vaccinations" "page_vaccinations" %}
+    {% else %}
+      <p class="text-muted">{% trans "No vaccination logs available." %}</p>
+    {% endif %}
+  </div>
+{% endif %}

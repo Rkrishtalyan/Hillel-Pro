@@ -1,0 +1,115 @@
+{% load pagination %}
+{% load i18n %}
+{% if active_tab|default:"tasks" == "tasks" %}
+  <div class="tab-pane fade show active" id="tasks">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="m-0">{% trans "Tasks" %}</h5>
+      <a href="{% url 'pets:task_create' pet.id %}" class="btn btn-success">
+        {% trans "Add Task" %}
+      </a>
+    </div>
+
+    <!-- "Show/hide old" and "per_page" switches -->
+    <div class="mb-3 d-flex justify-content-between">
+      <div>
+        {% if show_old == "1" %}
+          <a
+            href="?tab=tasks&show_old=0&per_page_tasks={{ per_page_tasks }}"
+            class="btn btn-outline-secondary"
+          >
+            {% trans "Hide old tasks" %}
+          </a>
+        {% else %}
+          <a
+            href="?tab=tasks&show_old=1&per_page_tasks={{ per_page_tasks }}"
+            class="btn btn-outline-secondary"
+          >
+            {% trans "Show old tasks" %}
+          </a>
+        {% endif %}
+      </div>
+      <div>
+        <form method="get" class="d-inline">
+          <!-- Saves current tab and show_old value at per_page selection -->
+          <input type="hidden" name="tab" value="tasks">
+          <input type="hidden" name="show_old" value="{{ show_old }}">
+
+          <label for="id_per_page_tasks">{% trans "Per page" %}:</label>
+          <select name="per_page_tasks" id="id_per_page_tasks" onchange="this.form.submit()">
+            <option value="10" {% if per_page_tasks == "10" %}selected{% endif %}>10</option>
+            <option value="25" {% if per_page_tasks == "25" %}selected{% endif %}>25</option>
+            <option value="50" {% if per_page_tasks == "50" %}selected{% endif %}>50</option>
+          </select>
+        </form>
+      </div>
+    </div>
+
+    {% if tasks %}
+      <form method="POST" action="{% url 'pets:task_bulk_status' pet.id %}?tab=tasks&show_old={{ show_old }}&per_page_tasks={{ per_page_tasks }}">
+        {% csrf_token %}
+        <input type="hidden" name="bulk_update" value="1">
+
+        <table class="table table-bordered table-sm">
+          <thead>
+            <tr>
+              <th style="width: 40px;"></th>
+              <th>{% trans "Title" %}</th>
+              <th>{% trans "Due Date/Time" %}</th>
+              <th>{% trans "Status" %}</th>
+              <th style="width: 160px;">{% trans "Actions" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in tasks %}
+              <tr>
+                <td>
+                  {% if task.status == 'planned' or task.status == 'overdue' %}
+                    <input type="checkbox" name="task_ids" value="{{ task.id }}">
+                  {% endif %}
+                </td>
+                <td>{{ task.title }}</td>
+                <td>
+                  {% if task.due_datetime %}{{ task.due_datetime }}{% else %}-{% endif %}
+                </td>
+                <td>
+                  {% if task.status == 'planned' %}
+                    <span class="badge bg-primary">{% trans "Planned" %}</span>
+                  {% elif task.status == 'overdue' %}
+                    <span class="badge bg-danger">{% trans "Overdue" %}</span>
+                  {% elif task.status == 'done' %}
+                    <span class="badge bg-success">{% trans "Done" %}</span>
+                  {% elif task.status == 'skipped' %}
+                    <span class="badge bg-secondary">{% trans "Skipped" %}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{% url 'pets:task_edit' task.id %}" class="btn btn-sm btn-secondary">
+                    {% trans "Edit" %}
+                  </a>
+                  {% if request.user == pet.owner %}
+                    <a href="{% url 'pets:task_delete' task.id %}" class="btn btn-sm btn-danger ms-1">
+                      {% trans "Delete" %}
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="mt-2">
+          <button type="submit" name="action" value="done" class="btn btn-success btn-sm">
+            {% trans "Mark as Done" %}
+          </button>
+          <button type="submit" name="action" value="skipped" class="btn btn-warning btn-sm">
+            {% trans "Mark as Skipped" %}
+          </button>
+        </div>
+      </form>
+
+      {% render_pagination page_obj_tasks "tasks" "per_page_tasks" "page_tasks" %}
+    {% else %}
+      <p class="text-muted">{% trans "No tasks available." %}</p>
+    {% endif %}
+  </div>
+{% endif %}

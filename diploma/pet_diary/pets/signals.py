@@ -1,14 +1,13 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from pets.models import VaccinationLog, Task
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from datetime import datetime
+
+from pets.models import Vaccination, Task
 from pets.notifications import _notify_owner_about_result
 
 
-@receiver(post_save, sender=VaccinationLog)
+@receiver(post_save, sender=Vaccination)
 def create_vaccination_task(sender, instance, created, **kwargs):
     if created and instance.next_due_date:
         task = Task.objects.create(
@@ -19,13 +18,13 @@ def create_vaccination_task(sender, instance, created, **kwargs):
             remind_me = True,
             remind_before='1_day',
         )
-        vaccination = VaccinationLog.objects.filter(
+        vaccination = Vaccination.objects.filter(
             id=instance.id,
         )
         vaccination.update(related_task_id=task.id)
 
 
-@receiver(post_save, sender=VaccinationLog)
+@receiver(post_save, sender=Vaccination)
 def update_vaccination_task(sender, instance, created, **kwargs):
     if created:
         return
@@ -44,7 +43,7 @@ def update_vaccination_task(sender, instance, created, **kwargs):
         task.save()
 
 
-@receiver(post_save, sender=VaccinationLog)
+@receiver(post_save, sender=Vaccination)
 def delete_vaccination_task(sender, instance, created, **kwargs):
     if created:
         return

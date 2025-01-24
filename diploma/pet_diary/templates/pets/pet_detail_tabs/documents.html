@@ -1,0 +1,68 @@
+{% load i18n %}
+{% load pagination %}
+{% if active_tab == "documents" %}
+  <div class="tab-pane fade show active" id="documents">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h5 class="m-0">{% trans "Pet Documents" %}</h5>
+      <a href="{% url 'pets:document_upload' pet.id %}" class="btn btn-primary">
+        {% trans "Upload Document" %}
+      </a>
+    </div>
+
+    <div class="mb-3 d-flex justify-content-end">
+      <form method="get" class="d-inline">
+        <input type="hidden" name="tab" value="documents">
+        <label for="id_per_page_documents">{% trans "Per page" %}:</label>
+        <select name="per_page_documents" id="id_per_page_documents" onchange="this.form.submit()">
+          <option value="10" {% if per_page_documents == "10" %}selected{% endif %}>10</option>
+          <option value="25" {% if per_page_documents == "25" %}selected{% endif %}>25</option>
+          <option value="50" {% if per_page_documents == "50" %}selected{% endif %}>50</option>
+        </select>
+      </form>
+    </div>
+
+    {% if documents %}
+      <table class="table table-hover table-sm">
+        <thead>
+          <tr>
+            <th>{% trans "Document Date" %}</th>
+            <th>{% trans "Type" %}</th>
+            <th>{% trans "Description" %}</th>
+            <th>{% trans "File" %}</th>
+            {% if request.user == pet.owner %}
+              <th>{% trans "Actions" %}</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documents %}
+            <tr>
+              <td>{{ doc.doc_date }}</td>
+              <td>{{ doc.get_doc_type_display }}</td>
+              <td>{{ doc.description|default:"-" }}</td>
+              <td>
+                <a href="{% url 'pets:protected_media_document' pet.id doc.doc_file_name %}" target="_blank">
+                  {% trans "Download" %}
+                </a>
+              </td>
+              {% if request.user == pet.owner %}
+                <td>
+                  <a href="{% url 'pets:document_edit' doc.id %}" class="btn btn-sm btn-secondary">
+                    {% trans "Edit" %}
+                  </a>
+                  <a href="{% url 'pets:delete_pet_document' pet.id doc.id %}" class="btn btn-sm btn-danger ms-1">
+                    {% trans "Delete" %}
+                  </a>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% render_pagination page_obj_documents "documents" "per_page_documents" "page_documents" %}
+    {% else %}
+      <p class="text-muted">{% trans "No pet documents available." %}</p>
+    {% endif %}
+  </div>
+{% endif %}

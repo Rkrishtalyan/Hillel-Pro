@@ -1,18 +1,20 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
 from accounts.managers import CustomUserManager
 
-
-class CommunicationMethod(models.TextChoices):
-    EMAIL = 'Email', _("Email")
-    TELEGRAM = 'Telegram', _("Telegram")
 
 LANGUAGE_CHOICES = [
     ('en', 'English'),
     ('ru', 'Russian'),
     ('ua', 'Ukrainian'),
 ]
+
+
+class CommunicationMethod(models.TextChoices):
+    EMAIL = 'Email', _("Email")
+    TELEGRAM = 'Telegram', _("Telegram")
 
 
 class CustomUser(AbstractUser):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from pets.models import (
-    Pet, PetImage, WeightLog,
-    VaccinationLog, Task, PetDocument
+    Pet, PetImage, WeightRecord,
+    Vaccination, Task, PetDocument
 )
 
 
@@ -25,13 +25,13 @@ class PetImageAdmin(admin.ModelAdmin):
     list_display = ('id', 'pet', 'uploaded_at')
 
 
-@admin.register(WeightLog)
+@admin.register(WeightRecord)
 class WeightLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'pet', 'date', 'weight_kg')
     list_filter = ('pet', 'date')
 
 
-@admin.register(VaccinationLog)
+@admin.register(Vaccination)
 class VaccinationLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'pet', 'vaccine_name', 'date_administered', 'next_due_date')
     list_filter = ('pet', 'vaccine_name', 'date_administered', 'next_due_date')

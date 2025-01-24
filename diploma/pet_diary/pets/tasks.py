@@ -2,9 +2,10 @@ import os
 import pytz
 from datetime import timedelta
 from celery import shared_task
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.translation import gettext as _
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 
 from pets.models import Task
@@ -16,6 +17,13 @@ _bot = None
 CD_NOTIFY_DONE = "NOTIFY_DONE"
 CD_NOTIFY_SKIP = "NOTIFY_SKIP"
 SEPARATOR = "|"
+
+
+def _activate_language(user):
+    if user and user.preferred_language:
+        translation.activate(user.preferred_language)
+    else:
+        translation.activate('ua')
 
 
 def get_bot() -> Bot:
@@ -65,16 +73,23 @@ def _parse_remind_before(rb: str) -> timedelta:
     return timedelta(0)
 
 
-def _send_task_reminder(user: CustomUser, task: Task):
+def _send_task_reminder(user, task):
+    _activate_language(user)
     due_str = _format_datetime_for_user(task.due_datetime, user)
-    msg_text = f"Reminder: Task '{task.title}' is due at {due_str}!"
+    msg_text = _(
+    "Reminder: Task '%(task_title)s' for pet %(pet_name)s is due at %(due_datetime)s!"
+) % {
+    'task_title': task.title,
+    'pet_name': task.pet.name,
+    'due_datetime': due_str,
+}
 
     callback_done = f"{CD_NOTIFY_DONE}{SEPARATOR}task_id={task.id}"
     callback_skip = f"{CD_NOTIFY_SKIP}{SEPARATOR}task_id={task.id}"
     keyboard = [
         [
-            InlineKeyboardButton("Done", callback_data=callback_done),
-            InlineKeyboardButton("Skip", callback_data=callback_skip),
+            InlineKeyboardButton(_("Done"), callback_data=callback_done),
+            InlineKeyboardButton(_("Skip"), callback_data=callback_skip),
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
@@ -89,7 +104,7 @@ def _send_task_reminder(user: CustomUser, task: Task):
         task.mark_as_reminded_via_telegram()
     else:
         send_mail(
-            subject="Task Reminder",
+            subject=_("Task Reminder"),
             message=msg_text,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
@@ -97,7 +112,7 @@ def _send_task_reminder(user: CustomUser, task: Task):
         task.mark_as_reminded_via_email()
 
 
-def _format_datetime_for_user(dt, user: CustomUser) -> str:
+def _format_datetime_for_user(dt, user):
     if not dt:
         return "N/A"
 
